@@ -1,0 +1,39 @@
+# ==========================================
+# Root .gitignore for SafeChild Project
+# ==========================================
+
+# Archives & Large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Laravel Backend (safechild-api)
+safechild-api/vendor/
+safechild-api/node_modules/
+safechild-api/public/storage
+safechild-api/storage/*.key
+safechild-api/storage/logs/*.log
+safechild-api/.phpunit.result.cache
+
+# Flutter Frontend (safechild_app)
+safechild_app/.dart_tool/
+safechild_app/.flutter-plugins
+safechild_app/.flutter-plugins-dependencies
+safechild_app/build/
+safechild_app/.pub-cache/
+safechild_app/.pub/
