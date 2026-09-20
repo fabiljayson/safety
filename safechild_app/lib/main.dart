@@ -24,19 +24,19 @@ void main() async {
   
   runApp(
     const ProviderScope(
-      child: SafeChildApp(),
+      child: SafetyApp(),
     ),
   );
 }
 
-class SafeChildApp extends ConsumerStatefulWidget {
-  const SafeChildApp({super.key});
+class SafetyApp extends ConsumerStatefulWidget {
+  const SafetyApp({super.key});
 
   @override
-  ConsumerState<SafeChildApp> createState() => _SafeChildAppState();
+  ConsumerState<SafetyApp> createState() => _SafetyAppState();
 }
 
-class _SafeChildAppState extends ConsumerState<SafeChildApp> {
+class _SafetyAppState extends ConsumerState<SafetyApp> {
   @override
   void initState() {
     super.initState();
@@ -52,7 +52,7 @@ class _SafeChildAppState extends ConsumerState<SafeChildApp> {
     final authState = ref.watch(authProvider);
 
     return MaterialApp(
-      title: 'SafeChild',
+      title: 'Safety',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),

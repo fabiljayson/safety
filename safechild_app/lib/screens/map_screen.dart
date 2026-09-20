@@ -302,7 +302,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      final message = "🚨 ALERTE ENLÈVEMENT : ${child.name}, ${child.age} ans disparu(e). Aidez-nous à le/la retrouver ! #SafeChild";
+                      final message = "🚨 ALERTE DISPARITION : ${child.name}, ${child.age} ans disparu(e). Aidez-nous à le/la retrouver ! #Safety";
                       Share.share(message);
                     },
                     icon: const Icon(Icons.share),

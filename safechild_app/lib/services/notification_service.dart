@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -8,15 +9,21 @@ final notificationServiceProvider = Provider((ref) => NotificationService(ref));
 
 class NotificationService {
   final Ref _ref;
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   NotificationService(this._ref);
 
   Future<void> init() async {
     try {
+      if (Firebase.apps.isEmpty) {
+        debugPrint("Firebase not initialized. Push notifications disabled.");
+        return;
+      }
+
+      final fcm = FirebaseMessaging.instance;
+
       // Request permissions
-      await _fcm.requestPermission(
+      await fcm.requestPermission(
         alert: true,
         badge: true,
         sound: true,
@@ -40,13 +47,13 @@ class NotificationService {
       });
 
       // Get and save token
-      String? token = await _fcm.getToken();
+      String? token = await fcm.getToken();
       if (token != null) {
         await _saveTokenToBackend(token);
       }
 
       // Refresh token
-      _fcm.onTokenRefresh.listen((newToken) async {
+      fcm.onTokenRefresh.listen((newToken) async {
         await _saveTokenToBackend(newToken);
       });
     } catch (e) {
@@ -73,8 +80,8 @@ class NotificationService {
         notification.body,
         const NotificationDetails(
           android: AndroidNotificationDetails(
-            'safechild_alerts',
-            'SafeChild Alerts',
+            'safety_alerts',
+            'Safety Alerts',
             importance: Importance.max,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',

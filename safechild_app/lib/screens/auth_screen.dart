@@ -148,23 +148,47 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/app_icon.png',
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 15),
-                    const Text(
-                      'Safechild',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.cyanAccent.withValues(alpha: 0.3),
+                            blurRadius: 25,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          'assets/images/safety_logo.png',
+                          height: 110,
+                          width: 110,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    Text(tr.translate('welcome_back'), style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'SAFETY',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 4,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      tr.translate('safety_subtitle'),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                     const SizedBox(height: 40),
                     Container(
                       padding: const EdgeInsets.all(25),

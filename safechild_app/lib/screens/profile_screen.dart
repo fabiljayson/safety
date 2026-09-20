@@ -37,6 +37,78 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  void _showAboutDialog(BuildContext context, AppTranslations tr) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.cyan.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/images/safety_logo.png',
+                  height: 90,
+                  width: 90,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'SAFETY',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 3),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              tr.translate('safety_subtitle'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Text(
+                tr.translate('app_version'),
+                style: TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[900],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Fermer'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).value;
@@ -157,6 +229,12 @@ class ProfileScreen extends ConsumerWidget {
             _buildMenuItem(context, Icons.notifications_outlined, tr.translate('notif_prefs')),
             _buildMenuItem(context, Icons.security_outlined, tr.translate('security_privacy')),
             _buildMenuItem(context, Icons.help_outline, tr.translate('help_center')),
+            _buildMenuItem(
+              context, 
+              Icons.shield_outlined, 
+              tr.translate('about_safety'),
+              onTap: () => _showAboutDialog(context, tr),
+            ),
             
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -213,7 +291,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title) {
+  Widget _buildMenuItem(BuildContext context, IconData icon, String title, {VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: ListTile(
@@ -229,7 +307,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }

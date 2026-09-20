@@ -46,10 +46,24 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         leading: _selectedIndex == 0 
           ? Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: CircleAvatar(
-                backgroundColor: Colors.white24,
-                child: const Icon(Icons.person, color: Colors.white),
+              padding: const EdgeInsets.only(left: 14.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.6), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.cyanAccent.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/safety_logo.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             )
           : null,
@@ -57,17 +71,42 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${tr.translate('hello')}, ${user?.name ?? "User"}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        '${tr.translate('hello')}, ${user?.name ?? "User"}',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.cyanAccent.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.4), width: 0.8),
+                      ),
+                      child: const Text(
+                        'SAFETY',
+                        style: TextStyle(
+                          color: Colors.cyanAccent,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
                   tr.translate('welcome_back'),
-                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  style: const TextStyle(color: Colors.white70, fontSize: 11),
                 ),
               ],
             )

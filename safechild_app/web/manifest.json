@@ -1,11 +1,11 @@
 {
-    "name": "safechild_app",
-    "short_name": "safechild_app",
+    "name": "Safety",
+    "short_name": "Safety",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Safety - Plateforme citoyenne et d'alerte pour les personnes disparues.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
