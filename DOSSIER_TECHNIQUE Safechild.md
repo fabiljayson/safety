@@ -1,7 +1,7 @@
 # Dossier Technique : SafeChild Platform 🛡️
 
 ## 1. Présentation du Projet
-**SafeChild** est une plateforme intégrée (Mobile + Web) dédiée à la recherche immédiate d'**enfants disparus**, d'**adultes vulnérables disparus** et de **personnes recherchées**, avec un système de validation préalable par les autorités pour garantir l'intégrité des alertes diffusées.
+**SafeChild** est une plateforme intégrée (Mobile + Web) dédiée à la recherche immédiate d'**enfants disparus**, d'**adultes vulnérables disparus** et de **personnes recherchées**, avec un système de validation préalable par les autorités pour garantir l'intégrité des alertes diffusées.p
 
 ## 2. Architecture Globale
 Le système repose sur une architecture **Client-Serveur** :
@@ -59,7 +59,8 @@ Le système repose sur une architecture **Client-Serveur** :
 *   PHP 8.3+ & Composer
 *   Node.js & NPM
 *   Flutter SDK
-*   Serveur MySQL (XAMPP/WAMP)
+*   Serveur MySQL (
+    XAMPP/WAMP)
 
 ### Installation Backend
 ```bash
