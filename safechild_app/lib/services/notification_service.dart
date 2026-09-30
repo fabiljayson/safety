@@ -9,7 +9,8 @@ final notificationServiceProvider = Provider((ref) => NotificationService(ref));
 
 class NotificationService {
   final Ref _ref;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
   NotificationService(this._ref);
 
@@ -23,11 +24,7 @@ class NotificationService {
       final fcm = FirebaseMessaging.instance;
 
       // Request permissions
-      await fcm.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      await fcm.requestPermission(alert: true, badge: true, sound: true);
 
       // Initialize local notifications
       const AndroidInitializationSettings initializationSettingsAndroid =
@@ -63,7 +60,9 @@ class NotificationService {
 
   Future<void> _saveTokenToBackend(String token) async {
     try {
-      await _ref.read(apiServiceProvider).post('/update-fcm-token', data: {'fcm_token': token});
+      await _ref
+          .read(apiServiceProvider)
+          .post('/update-fcm-token', data: {'fcm_token': token});
     } catch (e) {
       // Ignore if not logged in yet
     }

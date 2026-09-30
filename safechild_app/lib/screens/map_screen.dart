@@ -79,10 +79,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         children: [
           FlutterMap(
             mapController: _mapController,
-            options: MapOptions(
-              initialCenter: _currentCenter,
-              initialZoom: 13,
-            ),
+            options: MapOptions(initialCenter: _currentCenter, initialZoom: 13),
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -91,14 +88,22 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               if (_showHeatmap)
                 CircleLayer(
                   circles: dangerZones.when(
-                    data: (zones) => zones.map((zone) => CircleMarker(
-                      point: LatLng(zone.point.latitude, zone.point.longitude),
-                      radius: 50 * zone.weight,
-                      useRadiusInMeter: true,
-                      color: Colors.red.withValues(alpha: 0.3),
-                      borderColor: Colors.red.withValues(alpha: 0.6),
-                      borderStrokeWidth: 2,
-                    )).toList().cast<CircleMarker>(),
+                    data: (zones) => zones
+                        .map(
+                          (zone) => CircleMarker(
+                            point: LatLng(
+                              zone.point.latitude,
+                              zone.point.longitude,
+                            ),
+                            radius: 50 * zone.weight,
+                            useRadiusInMeter: true,
+                            color: Colors.red.withValues(alpha: 0.3),
+                            borderColor: Colors.red.withValues(alpha: 0.6),
+                            borderStrokeWidth: 2,
+                          ),
+                        )
+                        .toList()
+                        .cast<CircleMarker>(),
                     loading: () => <CircleMarker>[],
                     error: (_, _) => <CircleMarker>[],
                   ),
@@ -122,7 +127,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                               shape: BoxShape.circle,
                             ),
                           ),
-                          const Icon(Icons.my_location, color: Colors.blue, size: 24),
+                          const Icon(
+                            Icons.my_location,
+                            color: Colors.blue,
+                            size: 24,
+                          ),
                         ],
                       ),
                     ),
@@ -132,38 +141,48 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       data: (children) {
                         final filtered = _selectedFilter == 'all'
                             ? children
-                            : children.where((c) => c.alertType == _selectedFilter).toList();
+                            : children
+                                  .where((c) => c.alertType == _selectedFilter)
+                                  .toList();
 
-                        return filtered.map((child) => Marker(
-                          point: LatLng(child.disappearanceLat, child.disappearanceLng),
-                          width: 44,
-                          height: 44,
-                          child: GestureDetector(
-                            onTap: () => _showChildDetails(child, tr),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Icon(
-                                  Icons.location_on,
-                                  size: 44,
-                                  color: _getMarkerColor(child),
+                        return filtered
+                            .map(
+                              (child) => Marker(
+                                point: LatLng(
+                                  child.disappearanceLat,
+                                  child.disappearanceLng,
                                 ),
-                                Positioned(
-                                  top: 8,
-                                  child: Icon(
-                                    child.alertType == 'wanted_person'
-                                        ? Icons.warning_rounded
-                                        : child.alertType == 'adult_missing'
-                                            ? Icons.person
-                                            : Icons.child_care,
-                                    size: 14,
-                                    color: Colors.white,
+                                width: 44,
+                                height: 44,
+                                child: GestureDetector(
+                                  onTap: () => _showChildDetails(child, tr),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        size: 44,
+                                        color: _getMarkerColor(child),
+                                      ),
+                                      Positioned(
+                                        top: 8,
+                                        child: Icon(
+                                          child.alertType == 'wanted_person'
+                                              ? Icons.warning_rounded
+                                              : child.alertType ==
+                                                    'adult_missing'
+                                              ? Icons.person
+                                              : Icons.child_care,
+                                          size: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        )).toList();
+                              ),
+                            )
+                            .toList();
                       },
                       loading: () => [],
                       error: (_, _) => [],
@@ -182,13 +201,29 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterChip('all', tr.translate('filter_all'), Colors.blue[900]!),
+                  _buildFilterChip(
+                    'all',
+                    tr.translate('filter_all'),
+                    Colors.blue[900]!,
+                  ),
                   const SizedBox(width: 6),
-                  _buildFilterChip('child_missing', '👶 ${tr.translate('filter_children')}', Colors.blue[700]!),
+                  _buildFilterChip(
+                    'child_missing',
+                    '👶 ${tr.translate('filter_children')}',
+                    Colors.blue[700]!,
+                  ),
                   const SizedBox(width: 6),
-                  _buildFilterChip('adult_missing', '🧓 ${tr.translate('filter_adults')}', Colors.purple[700]!),
+                  _buildFilterChip(
+                    'adult_missing',
+                    '🧓 ${tr.translate('filter_adults')}',
+                    Colors.purple[700]!,
+                  ),
                   const SizedBox(width: 6),
-                  _buildFilterChip('wanted_person', '🚨 ${tr.translate('filter_wanted')}', Colors.red[700]!),
+                  _buildFilterChip(
+                    'wanted_person',
+                    '🚨 ${tr.translate('filter_wanted')}',
+                    Colors.red[700]!,
+                  ),
                 ],
               ),
             ),
@@ -221,11 +256,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const ReportChildScreen()),
-          );
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const ReportChildScreen()));
         },
-        label: const Text('LANCER UNE ALERTE', style: TextStyle(fontWeight: FontWeight.bold)),
+        label: const Text(
+          'LANCER UNE ALERTE',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         icon: const Icon(Icons.add_alert),
         backgroundColor: Colors.red,
       ),
@@ -241,8 +279,16 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         decoration: BoxDecoration(
           color: isSelected ? color : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 4, offset: const Offset(0, 2))],
-          border: isSelected ? Border.all(color: Colors.white, width: 1.5) : null,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+          border: isSelected
+              ? Border.all(color: Colors.white, width: 1.5)
+              : null,
         ),
         child: Text(
           label,
@@ -256,7 +302,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  Widget _buildMapButton({required String label, required IconData icon, required Color color, required VoidCallback onPressed}) {
+  Widget _buildMapButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -266,7 +317,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             color: Colors.black.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         const SizedBox(width: 8),
         FloatingActionButton.small(
@@ -297,14 +355,19 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 const SizedBox(width: 8),
                 Text(
                   child.name,
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            Text("${child.age} ans - Recherché depuis le ${child.disappearedAt.day}/${child.disappearedAt.month}"),
+            Text(
+              "${child.age} ans - Recherché depuis le ${child.disappearedAt.day}/${child.disappearedAt.month}",
+            ),
             const SizedBox(height: 10),
-            if (child.description != null) 
+            if (child.description != null)
               Text(child.description!, textAlign: TextAlign.center),
             const SizedBox(height: 20),
             Row(
@@ -312,7 +375,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      final message = "🚨 ALERTE DISPARITION : ${child.name}, ${child.age} ans disparu(e). Aidez-nous à le/la retrouver ! #Safety";
+                      final message =
+                          "🚨 ALERTE DISPARITION : ${child.name}, ${child.age} ans disparu(e). Aidez-nous à le/la retrouver ! #Safety";
                       Share.share(message);
                     },
                     icon: const Icon(Icons.share),
@@ -332,7 +396,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       );
                     },
                     icon: const Icon(Icons.remove_red_eye_outlined),
-                    label: const Text("Signaler & Détails", style: TextStyle(fontSize: 12)),
+                    label: const Text(
+                      "Signaler & Détails",
+                      style: TextStyle(fontSize: 12),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[900],
                       foregroundColor: Colors.white,

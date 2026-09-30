@@ -14,11 +14,7 @@ import 'package:safechild_app/main.dart';
 void main() {
   testWidgets('Smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(
-      const ProviderScope(
-        child: SafetyApp(),
-      ),
-    );
+    await tester.pumpWidget(const ProviderScope(child: SafetyApp()));
 
     // Verify that we are on the AuthScreen (contains 'Email' or 'Login')
     expect(find.byType(MaterialApp), findsOneWidget);

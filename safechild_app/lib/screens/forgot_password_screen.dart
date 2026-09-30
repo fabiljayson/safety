@@ -7,7 +7,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -15,7 +16,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _tokenController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _codeSent = false;
   bool _obscurePassword = true;
@@ -25,19 +26,22 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final tr = AppTranslations.of(context);
     setState(() => _isLoading = true);
     try {
-      await ref.read(apiServiceProvider).post('/forgot-password', data: {
-        'email': _emailController.text,
-      });
+      await ref
+          .read(apiServiceProvider)
+          .post('/forgot-password', data: {'email': _emailController.text});
       setState(() => _codeSent = true);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(tr.translate('code_sent'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(tr.translate('code_sent'))));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${tr.translate('error')}: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${tr.translate('error')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -50,12 +54,17 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final tr = AppTranslations.of(context);
     setState(() => _isLoading = true);
     try {
-      await ref.read(apiServiceProvider).post('/reset-password', data: {
-        'email': _emailController.text,
-        'token': _tokenController.text,
-        'password': _passwordController.text,
-        'password_confirmation': _confirmPasswordController.text,
-      });
+      await ref
+          .read(apiServiceProvider)
+          .post(
+            '/reset-password',
+            data: {
+              'email': _emailController.text,
+              'token': _tokenController.text,
+              'password': _passwordController.text,
+              'password_confirmation': _confirmPasswordController.text,
+            },
+          );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(tr.translate('password_reset_success'))),
@@ -65,7 +74,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${tr.translate('error')}: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${tr.translate('error')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -91,15 +103,17 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             const Icon(Icons.lock_reset_rounded, size: 80, color: Colors.blue),
             const SizedBox(height: 20),
             Text(
-              _codeSent ? tr.translate('reset_btn') : tr.translate('forgot_password_title'),
+              _codeSent
+                  ? tr.translate('reset_btn')
+                  : tr.translate('forgot_password_title'),
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(
-              _codeSent 
-                ? tr.translate('reset_instructions')
-                : tr.translate('forgot_instructions'),
+              _codeSent
+                  ? tr.translate('reset_instructions')
+                  : tr.translate('forgot_instructions'),
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.grey),
             ),
@@ -118,11 +132,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   backgroundColor: Colors.blue[900],
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: _isLoading 
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(tr.translate('receive_code_btn')),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(tr.translate('receive_code_btn')),
               ),
             ] else ...[
               _buildTextField(
@@ -137,8 +153,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 icon: Icons.lock_outline,
                 obscureText: _obscurePassword,
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
               _buildTextField(
@@ -154,11 +173,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: _isLoading 
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(tr.translate('reset_btn')),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(tr.translate('reset_btn')),
               ),
             ],
           ],
@@ -168,16 +189,19 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Widget _buildTextField({
-    required TextEditingController controller, 
-    required String label, 
-    required IconData icon, 
-    bool obscureText = false, 
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
     TextInputType? keyboardType,
     Widget? suffixIcon,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
-      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
@@ -187,7 +211,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           prefixIcon: Icon(icon, color: Colors.blue[900]),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 15,
+          ),
         ),
       ),
     );

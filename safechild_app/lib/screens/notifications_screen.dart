@@ -19,18 +19,25 @@ class NotificationsScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           return ListTile(
             leading: CircleAvatar(
-              backgroundColor: index % 2 == 0 ? Colors.red[50] : Colors.blue[50],
+              backgroundColor: index % 2 == 0
+                  ? Colors.red[50]
+                  : Colors.blue[50],
               child: Icon(
                 index % 2 == 0 ? Icons.warning_rounded : Icons.info_rounded,
                 color: index % 2 == 0 ? Colors.red : Colors.blue,
               ),
             ),
             title: Text(
-              index % 2 == 0 ? tr.translate('alert_kidnapping') : tr.translate('certified'),
+              index % 2 == 0
+                  ? tr.translate('alert_kidnapping')
+                  : tr.translate('certified'),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(tr.translate('notif_body')),
-            trailing: Text(tr.translate('time_ago'), style: const TextStyle(fontSize: 10, color: Colors.grey)),
+            trailing: Text(
+              tr.translate('time_ago'),
+              style: const TextStyle(fontSize: 10, color: Colors.grey),
+            ),
             onTap: () {},
           );
         },

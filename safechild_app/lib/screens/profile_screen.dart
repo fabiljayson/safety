@@ -7,7 +7,11 @@ import 'auth_screen.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
-  Future<void> _showLogoutDialog(BuildContext context, WidgetRef ref, AppTranslations tr) async {
+  Future<void> _showLogoutDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppTranslations tr,
+  ) async {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -29,7 +33,10 @@ class ProfileScreen extends ConsumerWidget {
                 );
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: Text(tr.translate('sign_out').toUpperCase()),
           ),
         ],
@@ -42,7 +49,10 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 20,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -69,7 +79,11 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             const Text(
               'SAFETY',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 3),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 3,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -86,7 +100,11 @@ class ProfileScreen extends ConsumerWidget {
               ),
               child: Text(
                 tr.translate('app_version'),
-                style: TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold, fontSize: 12),
+                style: TextStyle(
+                  color: Colors.blue[900],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
               ),
             ),
           ],
@@ -98,7 +116,9 @@ class ProfileScreen extends ConsumerWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue[900],
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: const Text('Fermer'),
             ),
@@ -107,7 +127,6 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -128,7 +147,9 @@ class ProfileScreen extends ConsumerWidget {
                   CircleAvatar(
                     radius: 60,
                     backgroundColor: Colors.blue[50],
-                    backgroundImage: const NetworkImage('https://cdn-icons-png.flaticon.com/512/3135/3135715.png'),
+                    backgroundImage: const NetworkImage(
+                      'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -138,7 +159,11 @@ class ProfileScreen extends ConsumerWidget {
                       child: CircleAvatar(
                         radius: 18,
                         backgroundColor: Colors.blue[900],
-                        child: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          size: 18,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -147,7 +172,8 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 15),
             Text(
-              user?.name ?? (tr.translate('role') == 'Rôle' ? 'Utilisateur' : 'User'),
+              user?.name ??
+                  (tr.translate('role') == 'Rôle' ? 'Utilisateur' : 'User'),
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Text(
@@ -155,14 +181,19 @@ class ProfileScreen extends ConsumerWidget {
               style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 30),
-            
+
             // Theme Toggle
             _buildActionCard(
               context,
               child: SwitchListTile(
-                title: Text(tr.translate('dark_mode'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(
+                  tr.translate('dark_mode'),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 secondary: Icon(
-                  themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+                  themeMode == ThemeMode.dark
+                      ? Icons.dark_mode
+                      : Icons.light_mode,
                   color: Colors.blue[900],
                 ),
                 value: themeMode == ThemeMode.dark,
@@ -178,7 +209,10 @@ class ProfileScreen extends ConsumerWidget {
             _buildActionCard(
               context,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 5,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -186,7 +220,10 @@ class ProfileScreen extends ConsumerWidget {
                       children: [
                         Icon(Icons.language, color: Colors.blue[900]),
                         const SizedBox(width: 16),
-                        Text(tr.translate('language'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          tr.translate('language'),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                     DropdownButton<String>(
@@ -198,7 +235,9 @@ class ProfileScreen extends ConsumerWidget {
                       ],
                       onChanged: (val) {
                         if (val != null) {
-                          ref.read(localeProvider.notifier).setLocale(Locale(val));
+                          ref
+                              .read(localeProvider.notifier)
+                              .setLocale(Locale(val));
                         }
                       },
                     ),
@@ -208,7 +247,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
 
             const SizedBox(height: 20),
-            
+
             // Stats de l'utilisateur
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -221,26 +260,42 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 30),
-            
+
             // Menu options
-            _buildMenuItem(context, Icons.person_outline, tr.translate('profile_info')),
-            _buildMenuItem(context, Icons.notifications_outlined, tr.translate('notif_prefs')),
-            _buildMenuItem(context, Icons.security_outlined, tr.translate('security_privacy')),
-            _buildMenuItem(context, Icons.help_outline, tr.translate('help_center')),
             _buildMenuItem(
-              context, 
-              Icons.shield_outlined, 
+              context,
+              Icons.person_outline,
+              tr.translate('profile_info'),
+            ),
+            _buildMenuItem(
+              context,
+              Icons.notifications_outlined,
+              tr.translate('notif_prefs'),
+            ),
+            _buildMenuItem(
+              context,
+              Icons.security_outlined,
+              tr.translate('security_privacy'),
+            ),
+            _buildMenuItem(
+              context,
+              Icons.help_outline,
+              tr.translate('help_center'),
+            ),
+            _buildMenuItem(
+              context,
+              Icons.shield_outlined,
               tr.translate('about_safety'),
               onTap: () => _showAboutDialog(context, tr),
             ),
-            
+
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Divider(),
             ),
-            
+
             // Bouton Déconnexion
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -256,9 +311,16 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 title: Text(
                   tr.translate('sign_out'),
-                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.red),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: Colors.red,
+                ),
               ),
             ),
             const SizedBox(height: 50),
@@ -275,7 +337,12 @@ class ProfileScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(15),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+            ),
+          ],
         ),
         child: child,
       ),
@@ -285,22 +352,30 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildMiniStat(String label, String value) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
       ],
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title, {VoidCallback? onTap}) {
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title, {
+    VoidCallback? onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark 
-              ? Colors.white10 
-              : Colors.blue[50],
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white10
+                : Colors.blue[50],
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: Colors.blue[900]),

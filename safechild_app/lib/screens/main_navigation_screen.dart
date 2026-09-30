@@ -13,7 +13,8 @@ class MainNavigationScreen extends ConsumerStatefulWidget {
   const MainNavigationScreen({super.key});
 
   @override
-  ConsumerState<MainNavigationScreen> createState() => _MainNavigationScreenState();
+  ConsumerState<MainNavigationScreen> createState() =>
+      _MainNavigationScreenState();
 }
 
 class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
@@ -44,76 +45,88 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         backgroundColor: Colors.blue[900],
         elevation: 4,
         iconTheme: const IconThemeData(color: Colors.white),
-        leading: _selectedIndex == 0 
-          ? Padding(
-              padding: const EdgeInsets.only(left: 14.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.6), width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.cyanAccent.withValues(alpha: 0.2),
-                      blurRadius: 8,
+        leading: _selectedIndex == 0
+            ? Padding(
+                padding: const EdgeInsets.only(left: 14.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.cyanAccent.withValues(alpha: 0.6),
+                      width: 1.5,
                     ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/images/safety_logo.png',
-                    fit: BoxFit.cover,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.cyanAccent.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/safety_logo.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
+              )
+            : null,
+        title: _selectedIndex == 0
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          '${tr.translate('hello')}, ${user?.name ?? "User"}',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.cyanAccent.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: Colors.cyanAccent.withValues(alpha: 0.4),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: const Text(
+                          'SAFETY',
+                          style: TextStyle(
+                            color: Colors.cyanAccent,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    tr.translate('welcome_back'),
+                    style: const TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
+                ],
+              )
+            : Text(
+                titles[_selectedIndex],
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            )
-          : null,
-        title: _selectedIndex == 0 
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${tr.translate('hello')}, ${user?.name ?? "User"}',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.cyanAccent.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.4), width: 0.8),
-                      ),
-                      child: const Text(
-                        'SAFETY',
-                        style: TextStyle(
-                          color: Colors.cyanAccent,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  tr.translate('welcome_back'),
-                  style: const TextStyle(color: Colors.white70, fontSize: 11),
-                ),
-              ],
-            )
-          : Text(
-              titles[_selectedIndex],
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-            ),
         actions: [
           IconButton(
             icon: const Icon(Icons.group_outlined, color: Colors.white),
@@ -124,7 +137,10 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_active_outlined, color: Colors.white),
+            icon: const Icon(
+              Icons.notifications_active_outlined,
+              color: Colors.white,
+            ),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const NotificationsScreen()),
@@ -134,10 +150,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
@@ -157,7 +170,10 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           showUnselectedLabels: true,
           elevation: 0,
           backgroundColor: Colors.blue[900],
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          selectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
           unselectedLabelStyle: const TextStyle(fontSize: 11),
           items: [
             BottomNavigationBarItem(
@@ -178,7 +194,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: const Icon(Icons.account_circle_outlined, size: 28),
               activeIcon: const Icon(Icons.account_circle, size: 30),
-              label: tr.translate('profile_title') == 'Mon Profil' ? 'Profil' : 'Profile',
+              label: tr.translate('profile_title') == 'Mon Profil'
+                  ? 'Profil'
+                  : 'Profile',
             ),
           ],
         ),

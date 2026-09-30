@@ -26,8 +26,12 @@ class User {
       email: json['email'],
       phone: json['phone'],
       role: json['role'],
-      lastLat: json['last_lat'] != null ? double.parse(json['last_lat'].toString()) : null,
-      lastLng: json['last_lng'] != null ? double.parse(json['last_lng'].toString()) : null,
+      lastLat: json['last_lat'] != null
+          ? double.parse(json['last_lat'].toString())
+          : null,
+      lastLng: json['last_lng'] != null
+          ? double.parse(json['last_lng'].toString())
+          : null,
       fcmToken: json['fcm_token'],
     );
   }

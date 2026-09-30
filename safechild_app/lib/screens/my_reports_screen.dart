@@ -7,7 +7,10 @@ import 'child_detail_screen.dart';
 
 final myReportsProvider = FutureProvider<List<MissingChild>>((ref) async {
   final api = ref.watch(apiServiceProvider);
-  final response = await api.get('/missing-children', queryParameters: {'my_reports': 1});
+  final response = await api.get(
+    '/missing-children',
+    queryParameters: {'my_reports': 1},
+  );
   return (response.data as List).map((e) => MissingChild.fromJson(e)).toList();
 });
 
@@ -32,7 +35,11 @@ class MyReportsScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.list_alt_rounded, size: 80, color: Colors.grey[300]),
+                    Icon(
+                      Icons.list_alt_rounded,
+                      size: 80,
+                      color: Colors.grey[300],
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       tr.translate('no_reports'),
@@ -51,7 +58,9 @@ class MyReportsScreen extends ConsumerWidget {
                 return Card(
                   elevation: 2,
                   margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(
@@ -64,10 +73,12 @@ class MyReportsScreen extends ConsumerWidget {
                               tag: 'child_img_${child.id}',
                               child: CircleAvatar(
                                 radius: 28,
-                                backgroundImage: child.photoUrl != null 
-                                  ? NetworkImage(child.photoUrl!) 
-                                  : null,
-                                child: child.photoUrl == null ? const Icon(Icons.person) : null,
+                                backgroundImage: child.photoUrl != null
+                                    ? NetworkImage(child.photoUrl!)
+                                    : null,
+                                child: child.photoUrl == null
+                                    ? const Icon(Icons.person)
+                                    : null,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -80,31 +91,91 @@ class MyReportsScreen extends ConsumerWidget {
                                       Expanded(
                                         child: Text(
                                           child.name,
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                          ),
                                         ),
                                       ),
                                       if (child.alertType == 'wanted_person')
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(color: Colors.red[50], borderRadius: BorderRadius.circular(6), border: Border.all(color: Colors.red[300]!)),
-                                          child: Text('🚨 ${tr.translate('filter_wanted')}', style: TextStyle(color: Colors.red[900], fontSize: 10, fontWeight: FontWeight.bold)),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red[50],
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.red[300]!,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '🚨 ${tr.translate('filter_wanted')}',
+                                            style: TextStyle(
+                                              color: Colors.red[900],
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         )
-                                      else if (child.alertType == 'adult_missing')
+                                      else if (child.alertType ==
+                                          'adult_missing')
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(color: Colors.purple[50], borderRadius: BorderRadius.circular(6), border: Border.all(color: Colors.purple[300]!)),
-                                          child: Text('🧓 ${tr.translate('filter_adults')}', style: TextStyle(color: Colors.purple[900], fontSize: 10, fontWeight: FontWeight.bold)),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.purple[50],
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.purple[300]!,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '🧓 ${tr.translate('filter_adults')}',
+                                            style: TextStyle(
+                                              color: Colors.purple[900],
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         )
                                       else
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(6), border: Border.all(color: Colors.blue[300]!)),
-                                          child: Text('👶 ${tr.translate('filter_children')}', style: TextStyle(color: Colors.blue[900], fontSize: 10, fontWeight: FontWeight.bold)),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue[50],
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.blue[300]!,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '👶 ${tr.translate('filter_children')}',
+                                            style: TextStyle(
+                                              color: Colors.blue[900],
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                     ],
                                   ),
                                   const SizedBox(height: 4),
-                                  Text("${child.age} ${tr.translate('age_hint').toLowerCase()} • ${child.status == 'missing' ? tr.translate('missing') : tr.translate('found')}"),
+                                  Text(
+                                    "${child.age} ${tr.translate('age_hint').toLowerCase()} • ${child.status == 'missing' ? tr.translate('missing') : tr.translate('found')}",
+                                  ),
                                 ],
                               ),
                             ),
@@ -115,25 +186,42 @@ class MyReportsScreen extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
                               decoration: BoxDecoration(
-                                color: child.isVerified ? Colors.green[50] : Colors.amber[50],
+                                color: child.isVerified
+                                    ? Colors.green[50]
+                                    : Colors.amber[50],
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: child.isVerified ? Colors.green[300]! : Colors.amber[400]!),
+                                border: Border.all(
+                                  color: child.isVerified
+                                      ? Colors.green[300]!
+                                      : Colors.amber[400]!,
+                                ),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    child.isVerified ? Icons.verified : Icons.hourglass_top_rounded,
+                                    child.isVerified
+                                        ? Icons.verified
+                                        : Icons.hourglass_top_rounded,
                                     size: 14,
-                                    color: child.isVerified ? Colors.green[700] : Colors.amber[800],
+                                    color: child.isVerified
+                                        ? Colors.green[700]
+                                        : Colors.amber[800],
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
-                                    child.isVerified ? tr.translate('published_alert') : tr.translate('pending_approval'),
+                                    child.isVerified
+                                        ? tr.translate('published_alert')
+                                        : tr.translate('pending_approval'),
                                     style: TextStyle(
-                                      color: child.isVerified ? Colors.green[800] : Colors.amber[900],
+                                      color: child.isVerified
+                                          ? Colors.green[800]
+                                          : Colors.amber[900],
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -146,12 +234,16 @@ class MyReportsScreen extends ConsumerWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ChildDetailScreen(child: child),
+                                    builder: (context) =>
+                                        ChildDetailScreen(child: child),
                                   ),
                                 );
                               },
                               icon: const Icon(Icons.arrow_forward, size: 14),
-                              label: const Text('Détails', style: TextStyle(fontSize: 12)),
+                              label: const Text(
+                                'Détails',
+                                style: TextStyle(fontSize: 12),
+                              ),
                             ),
                           ],
                         ),
@@ -169,4 +261,3 @@ class MyReportsScreen extends ConsumerWidget {
     );
   }
 }
- 
