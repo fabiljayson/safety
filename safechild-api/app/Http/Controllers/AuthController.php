@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Mail\WelcomeEmail;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
@@ -21,19 +22,42 @@ class AuthController extends Controller
             'role' => 'nullable|in:parent,citizen,authority',
         ]);
 
+        // "authority" is a privileged role: it can verify alerts, which mass
+        // broadcasts push/SMS to every nearby phone. It must never be granted
+        // through public self-registration, so the requested role is only
+        // honoured for addresses on the config whitelist. Everyone else is
+        // downgraded to a regular citizen.
+        $requestedRole = $request->input('role', 'citizen');
+        $isWhitelisted = in_array(
+            strtolower($request->email),
+            array_map('strtolower', (array) config('app.authority_emails', [])),
+            true
+        );
+
+        if ($requestedRole === 'authority' && ! $isWhitelisted) {
+            Log::warning('Rejected authority self-registration attempt.', [
+                'email' => $request->email,
+                'ip' => $request->ip(),
+            ]);
+        }
+
+        $role = ($requestedRole === 'authority' && $isWhitelisted)
+            ? 'authority'
+            : ($requestedRole === 'parent' ? 'parent' : 'citizen');
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
-            'role' => $request->role ?? 'citizen',
+            'role' => $role,
         ]);
 
         // Send Welcome Email
         try {
             Mail::to($user->email)->send(new WelcomeEmail($user));
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to send welcome email: " . $e->getMessage());
+            Log::error('Failed to send welcome email: '.$e->getMessage());
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -54,7 +78,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Les identifiants fournis sont incorrects.'],
             ]);

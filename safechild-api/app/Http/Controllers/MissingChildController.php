@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MissingChild;
+use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,25 +19,24 @@ class MissingChildController extends Controller
 
     public function index(Request $request)
     {
-        $query = MissingChild::with('user')->latest();
+        $query = MissingChild::with(['user' => fn ($q) => $q->select(User::publicColumns())])->latest();
 
-        // If requesting my reports, show all reports belonging to the user (verified and pending)
+        $user = $request->user();
+        $isAuthority = $user && $user->role === 'authority';
+
         if ($request->boolean('my_reports')) {
-            $query->where('user_id', $request->user()->id);
-        } else {
-            // Public feed: only verified alerts unless user is authority
-            $isAuthority = $request->user() && $request->user()->role === 'authority';
-            if (!$isAuthority) {
-                $query->where('is_verified', true);
-            }
+            // A user may only ever list their own reports. This is restricted
+            // to the authenticated user rather than trusting an id parameter.
+            $query->where('user_id', $user->id);
+        } elseif (! $isAuthority) {
+            // Public feed: only verified alerts are visible to non-authorities.
+            $query->where('is_verified', true);
         }
 
-        // Filter by alert_type if provided
         if ($request->filled('alert_type') && $request->alert_type !== 'all') {
             $query->where('alert_type', $request->alert_type);
         }
 
-        // Filter by status if provided (default: missing)
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         } else {
@@ -48,7 +48,7 @@ class MissingChildController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'age' => 'required|integer',
             'alert_type' => 'nullable|in:child_missing,adult_missing,wanted_person',
@@ -60,15 +60,16 @@ class MissingChildController extends Controller
             'photo' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->except('photo');
+        // Only explicitly validated fields are persisted. Using the raw
+        // request here would let a caller inject user_id, is_verified,
+        // status or photo_url, which are all mass assignable.
+        $data = collect($validated)->except('photo')->all();
         $data['user_id'] = $request->user()->id;
-        $data['alert_type'] = $request->input('alert_type', 'child_missing');
+        $data['alert_type'] = $validated['alert_type'] ?? 'child_missing';
 
-        $isAuthority = $request->user()->role === 'authority';
-        
-        // If created by an authority, it is immediately verified and published.
-        // If created by a citizen, it requires prior verification by authorities before broadcast.
-        $data['is_verified'] = $isAuthority;
+        // Authorities publish immediately; citizen reports stay pending until
+        // an authority verifies them.
+        $data['is_verified'] = $this->isAuthority($request);
 
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('missing_children', 'public');
@@ -77,7 +78,6 @@ class MissingChildController extends Controller
 
         $child = MissingChild::create($data);
 
-        // Only trigger instant mass notification if created directly by an authority
         if ($child->is_verified) {
             $this->notificationService->broadcastAlert($child);
         }
@@ -85,29 +85,42 @@ class MissingChildController extends Controller
         return response()->json($child, 201);
     }
 
-    public function show(MissingChild $missingChild)
+    public function show(Request $request, MissingChild $missingChild)
     {
-        return $missingChild->load(['user', 'reports.user']);
+        $this->authorizeVisibility($request, $missingChild);
+
+        return $missingChild->load([
+            'user' => fn ($q) => $q->select(User::publicColumns()),
+            'reports.user' => fn ($q) => $q->select(User::publicColumns()),
+        ]);
     }
 
     public function update(Request $request, MissingChild $missingChild)
     {
-        // Only the reporting user or an authority can update
-        if ($request->user()->id !== $missingChild->user_id && $request->user()->role !== 'authority') {
+        $isAuthority = $this->isAuthority($request);
+
+        if (! $isAuthority && $request->user()->id !== $missingChild->user_id) {
             return response()->json(['message' => 'Non autorisé'], 403);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'status' => 'sometimes|in:missing,found',
             'alert_type' => 'sometimes|in:child_missing,adult_missing,wanted_person',
-            'is_verified' => 'sometimes|boolean',
         ]);
 
-        $wasVerified = $missingChild->is_verified;
-        $missingChild->update($request->all());
+        // is_verified is deliberately not accepted from this endpoint: it is
+        // the authority-only gate for broadcasting an alert, and accepting it
+        // here let a citizen self-verify their own report. Authorities use
+        // the dedicated /verify endpoint.
+        if ($isAuthority) {
+            $validated['is_verified'] = $request->boolean('is_verified');
+        }
 
-        // If an authority just verified the alert via update, broadcast notification
-        if (!$wasVerified && $missingChild->is_verified) {
+        $wasVerified = (bool) $missingChild->is_verified;
+
+        $missingChild->update($validated);
+
+        if (! $wasVerified && $missingChild->is_verified) {
             $this->notificationService->broadcastAlert($missingChild);
         }
 
@@ -116,15 +129,43 @@ class MissingChildController extends Controller
 
     public function verify(Request $request, MissingChild $missingChild)
     {
-        if ($request->user()->role !== 'authority') {
+        if (! $this->isAuthority($request)) {
             return response()->json(['message' => 'Non autorisé. Seules les autorités peuvent vérifier une alerte.'], 403);
         }
 
+        // Only broadcast on the transition, so re-verifying an alert does not
+        // spam every nearby phone a second time.
+        $wasVerified = (bool) $missingChild->is_verified;
+
         $missingChild->update(['is_verified' => true]);
 
-        // Broadcast notifications to nearby users (10km) on verification
-        $this->notificationService->broadcastAlert($missingChild);
+        if (! $wasVerified) {
+            $this->notificationService->broadcastAlert($missingChild);
+        }
 
         return response()->json(['message' => 'Alerte vérifiée et diffusée avec succès', 'child' => $missingChild]);
+    }
+
+    private function isAuthority(Request $request): bool
+    {
+        return (bool) $request->user()?->can('verifyAlerts');
+    }
+
+    /**
+     * Pending reports are only readable by the reporter and by authorities.
+     */
+    private function authorizeVisibility(Request $request, MissingChild $missingChild): void
+    {
+        $user = $request->user();
+
+        if ($missingChild->is_verified) {
+            return;
+        }
+
+        if ($this->isAuthority($request) || $user->id === $missingChild->user_id) {
+            return;
+        }
+
+        abort(403, 'Non autorisé.');
     }
 }

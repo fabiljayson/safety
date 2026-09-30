@@ -42,4 +42,34 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * A regular community member.
+     */
+    public function citizen(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'citizen',
+        ]);
+    }
+
+    /**
+     * A parent reporting their own missing child.
+     */
+    public function parent(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'parent',
+        ]);
+    }
+
+    /**
+     * A verified authority: the only role allowed to verify alerts.
+     */
+    public function authority(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'authority',
+        ]);
+    }
 }

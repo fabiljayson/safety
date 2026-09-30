@@ -1,16 +1,19 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MissingChildController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ReportController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/forgot-password', [\App\Http\Controllers\PasswordResetController::class, 'sendResetToken']);
-Route::post('/reset-password', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword']);
+// Public routes. Every one of these is rate limited: login and the 6-digit
+// password-reset OTP are otherwise brute-forceable, and the OTP only has
+// 1e6 possible values.
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetToken'])->middleware('throttle:3,1');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->middleware('throttle:5,1');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -31,5 +34,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reports', [ReportController::class, 'store']);
 
     // Analytics
-    Route::get('/danger-zones', [\App\Http\Controllers\AnalyticsController::class, 'dangerZones']);
+    Route::get('/danger-zones', [AnalyticsController::class, 'dangerZones']);
 });

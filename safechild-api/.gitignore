@@ -3,6 +3,15 @@
 .env
 .env.backup
 .env.production
+# Never commit a local database or service-account credentials.
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+/safechild
+*.p12
+service-account*.json
+/google-services.json
 .phpactor.json
 .phpunit.result.cache
 /.codex

@@ -123,4 +123,25 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authority Registration Whitelist
+    |--------------------------------------------------------------------------
+    |
+    | Public self-registration is never allowed to create an "authority"
+    | account: authorities can verify alerts and mass-broadcast to every
+    | nearby phone, so the role must only be granted out of band.
+    |
+    | Accounts listed here (comma separated) may still request the
+    | "authority" role through POST /api/register. Everyone else who asks
+    | for it is registered as a regular citizen instead. The seeder and
+    | any manual provisioning must use addresses from this list.
+    |
+    */
+
+    'authority_emails' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('AUTHORITY_EMAILS', 'police@safechild.gov'))
+    ))),
+
 ];
