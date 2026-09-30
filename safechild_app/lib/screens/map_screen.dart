@@ -237,14 +237,16 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 _buildMapButton(
-                  label: _showHeatmap ? "Mode Carte" : "Zones Risque",
+                  label: _showHeatmap
+                      ? tr.translate('map_mode')
+                      : tr.translate('risk_zones'),
                   icon: _showHeatmap ? Icons.map : Icons.local_fire_department,
                   color: _showHeatmap ? Colors.blue : Colors.red,
                   onPressed: () => setState(() => _showHeatmap = !_showHeatmap),
                 ),
                 const SizedBox(height: 12),
                 _buildMapButton(
-                  label: "Ma Position",
+                  label: tr.translate('my_position'),
                   icon: Icons.my_location,
                   color: Colors.blue[900]!,
                   onPressed: _determinePosition,
@@ -260,9 +262,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             context,
           ).push(MaterialPageRoute(builder: (_) => const ReportChildScreen()));
         },
-        label: const Text(
-          'LANCER UNE ALERTE',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        label: Text(
+          tr.translate('launch_alert_btn'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         icon: const Icon(Icons.add_alert),
         backgroundColor: Colors.red,
@@ -363,9 +365,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            Text(
-              "${child.age} ans - Recherché depuis le ${child.disappearedAt.day}/${child.disappearedAt.month}",
-            ),
+            Text(tr.missingSince(child.disappearedAt)),
+            const SizedBox(height: 4),
+            Text(tr.ageLabel(child.age)),
             const SizedBox(height: 10),
             if (child.description != null)
               Text(child.description!, textAlign: TextAlign.center),
@@ -375,12 +377,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      final message =
-                          "🚨 ALERTE DISPARITION : ${child.name}, ${child.age} ans disparu(e). Aidez-nous à le/la retrouver ! #Safety";
-                      Share.share(message);
+                      Share.share(
+                        tr
+                            .translate('share_alert_message')
+                            .replaceAll('{name}', child.name)
+                            .replaceAll('{age}', child.age.toString()),
+                      );
                     },
                     icon: const Icon(Icons.share),
-                    label: const Text("Partager"),
+                    label: Text(tr.translate('share')),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -396,9 +401,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       );
                     },
                     icon: const Icon(Icons.remove_red_eye_outlined),
-                    label: const Text(
-                      "Signaler & Détails",
-                      style: TextStyle(fontSize: 12),
+                    label: Text(
+                      tr.translate('report_and_details'),
+                      style: const TextStyle(fontSize: 12),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[900],

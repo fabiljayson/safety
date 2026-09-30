@@ -174,7 +174,7 @@ class MyReportsScreen extends ConsumerWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "${child.age} ${tr.translate('age_hint').toLowerCase()} • ${child.status == 'missing' ? tr.translate('missing') : tr.translate('found')}",
+                                    "${tr.ageLabel(child.age)} • ${child.status == 'missing' ? tr.translate('missing') : tr.translate('found')}",
                                   ),
                                 ],
                               ),
@@ -240,9 +240,9 @@ class MyReportsScreen extends ConsumerWidget {
                                 );
                               },
                               icon: const Icon(Icons.arrow_forward, size: 14),
-                              label: const Text(
-                                'Détails',
-                                style: TextStyle(fontSize: 12),
+                              label: Text(
+                                tr.translate('details'),
+                                style: const TextStyle(fontSize: 12),
                               ),
                             ),
                           ],

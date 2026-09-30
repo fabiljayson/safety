@@ -189,14 +189,12 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: const Icon(Icons.explore_outlined, size: 28),
               activeIcon: const Icon(Icons.explore, size: 30),
-              label: tr.translate('home_title') == 'Accueil' ? 'Carte' : 'Map',
+              label: tr.translate('nav_map'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.account_circle_outlined, size: 28),
               activeIcon: const Icon(Icons.account_circle, size: 30),
-              label: tr.translate('profile_title') == 'Mon Profil'
-                  ? 'Profil'
-                  : 'Profile',
+              label: tr.translate('nav_profile'),
             ),
           ],
         ),

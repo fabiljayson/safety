@@ -296,7 +296,7 @@ class HomeScreen extends ConsumerWidget {
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            "${child.age} ans - ${child.isVerified ? '✅ ${tr.translate('certified')}' : '⏳ ${tr.translate('pending')}'}",
+                            "${tr.ageLabel(child.age)} - ${child.isVerified ? '✅ ${tr.translate('certified')}' : '⏳ ${tr.translate('pending')}'}",
                           ),
                         ),
                         trailing: const Icon(Icons.chevron_right),
@@ -425,7 +425,7 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
               Text(
-                "${child.age} ans - ${child.status == 'missing' ? tr.translate('missing').toUpperCase() : tr.translate('found').toUpperCase()}",
+                "${tr.ageLabel(child.age)} - ${child.status == 'missing' ? tr.translate('missing').toUpperCase() : tr.translate('found').toUpperCase()}",
                 style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ],

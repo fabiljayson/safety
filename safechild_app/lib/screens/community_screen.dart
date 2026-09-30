@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_screen.dart';
 import '../services/localization_service.dart';
 
-// Modèle de données pour les posts
+// Data model for a community post
 class CommunityPost {
   final String id;
   final String userName;
@@ -26,7 +26,7 @@ class CommunityPost {
   });
 }
 
-// Modèle de données pour les commentaires
+// Data model for a post comment
 class CommunityComment {
   final String userName;
   final String userPhoto;
@@ -45,7 +45,7 @@ class CommunityComment {
   });
 }
 
-// Provider pour gérer l'état de la communauté (Simulation locale)
+// Community feed state (local simulation, no backend yet)
 final communityProvider =
     StateNotifierProvider<CommunityNotifier, List<CommunityPost>>((ref) {
       return CommunityNotifier();
@@ -56,19 +56,20 @@ class CommunityNotifier extends StateNotifier<List<CommunityPost>> {
     : super([
         CommunityPost(
           id: '1',
-          userName: 'Jean Dupont',
+          userName: 'John Smith',
           userPhoto: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
           content:
-              'Vigilance accrue ce matin près de l\'école primaire. Soyons attentifs !',
+              'Heightened awareness near the primary school this morning. '
+              'Let\'s all stay vigilant!',
           createdAt: DateTime.now().subtract(const Duration(hours: 2)),
           likes: 12,
           comments: [
             CommunityComment(
-              userName: 'Marie L.',
+              userName: 'Marie D.',
               userPhoto:
                   'https://cdn-icons-png.flaticon.com/512/4140/4140047.png',
               content:
-                  'Merci pour l\'info, je vais prévenir le groupe de parents.',
+                  'Thanks for the heads up, I will let the parents group know.',
               createdAt: DateTime.now().subtract(const Duration(hours: 1)),
             ),
           ],

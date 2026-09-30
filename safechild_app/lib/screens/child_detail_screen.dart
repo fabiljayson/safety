@@ -166,7 +166,10 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${tr.translate('error')}: ${describeApiError(e)}'),
+          content: Text(
+            '${tr.translate('error')}: '
+            '${describeApiError(e, connectionMessage: tr.translate('connection_error_api'))}',
+          ),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -341,7 +344,7 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                         ),
                       ),
                       Text(
-                        "${widget.child.age} ${tr.translate('age_hint') == 'Âge' ? 'ans' : 'years old'}",
+                        tr.ageLabel(widget.child.age),
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.blue[900],
@@ -493,9 +496,7 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                                       children: [
                                         Text(
                                           sighting['description'] ??
-                                              tr.translate(
-                                                'Pas de description',
-                                              ),
+                                              tr.translate('no_description'),
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
@@ -507,7 +508,7 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              "${tr.translate('sighting_by')} ${sighting['user']?['name'] ?? 'Témoin'}",
+                                              "${tr.translate('sighting_by')} ${sighting['user']?['name'] ?? tr.translate('witness')}",
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.grey,

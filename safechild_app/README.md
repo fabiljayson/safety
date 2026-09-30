@@ -96,6 +96,27 @@ flutter test
 
 ## Localization
 
-French and English strings live in `lib/services/localization_service.dart`.
-When adding a key, add it to **both** maps — a missing key falls back to the
-key name itself and shows up in the UI as raw snake_case.
+English and French strings live in `lib/services/localization_service.dart`.
+**English is the default**: on a fresh install the app uses the device language
+if it is `en` or `fr`, and English otherwise. Users can switch from the profile
+screen, and the choice is persisted.
+
+When adding a key, add it to **both** maps. A missing key falls back to the key
+name itself and shows up in the UI as raw snake_case, so
+`test/localization_service_test.dart` asserts the two maps stay in parity.
+
+Use the helpers rather than string concatenation for anything that has to vary
+by language:
+
+| Helper | Renders |
+| --- | --- |
+| `tr.ageLabel(5)` | `5 years old` / `5 ans`, using the French singular `an` for one |
+| `tr.missingSince(date)` | `Missing since Sep 14, 2026` / `Recherché depuis le 14 sept. 2026` |
+
+Never branch on the language by comparing a translated string
+(`tr.translate('home_title') == 'Accueil'`). That silently breaks the moment a
+translation is edited. Add a real key instead.
+
+`DateFormat` needs its locale data loaded before use, so `main()` calls
+`initializeDateFormatting()` for every supported locale. Without it, `intl`
+throws `LocaleDataException` and any localized date crashes the screen.

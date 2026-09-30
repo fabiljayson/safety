@@ -1,20 +1,35 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Languages the app actually ships translations for.
+const List<String> _supportedLanguageCodes = ['en', 'fr'];
+
+/// Language used when the device language is not translated, and on a fresh
+/// install with no stored preference.
+const String defaultLanguageCode = 'en';
 
 final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
   return LocaleNotifier();
 });
 
 class LocaleNotifier extends StateNotifier<Locale> {
-  LocaleNotifier() : super(const Locale('fr')) {
+  LocaleNotifier() : super(const Locale(defaultLanguageCode)) {
     _loadLocale();
   }
 
   Future<void> _loadLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    final langCode = prefs.getString('language_code') ?? 'fr';
-    state = Locale(langCode);
+    state = Locale(prefs.getString('language_code') ?? _deviceLanguage());
+  }
+
+  /// Picks the device language when it is one we translate, English otherwise.
+  String _deviceLanguage() {
+    final code = PlatformDispatcher.instance.locale.languageCode;
+    return _supportedLanguageCodes.contains(code) ? code : defaultLanguageCode;
   }
 
   Future<void> setLocale(Locale locale) async {
@@ -26,7 +41,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
 
 class AppTranslations {
   final Locale locale;
-  AppTranslations(this.locale);
+  const AppTranslations(this.locale);
 
   static final Map<String, Map<String, String>> _localizedValues = {
     'fr': {
@@ -174,6 +189,24 @@ class AppTranslations {
       'filter_wanted': 'Recherchés',
       'person_name_hint': 'Nom complet de la personne',
       'add_person_photo': 'Ajouter une photo',
+      'year_old_one': 'an',
+      'year_old_other': 'ans',
+      'missing_since': 'Recherché depuis le',
+      'nav_map': 'Carte',
+      'nav_profile': 'Profil',
+      'launch_alert_btn': 'LANCER UNE ALERTE',
+      'share_alert_message':
+          '🚨 ALERTE DISPARITION : {name}, {age} ans disparu(e). Aidez-nous à le/la retrouver ! #Safety',
+      'report_and_details': 'Signaler & Détails',
+      'no_description': 'Pas de description',
+      'witness': 'Témoin',
+      'understood': "OK, J'AI COMPRIS",
+      'details': 'Détails',
+      'close': 'Fermer',
+      'user': 'Utilisateur',
+      'points': 'Points',
+      'connection_error_api':
+          'Impossible de joindre le serveur. Vérifiez votre connexion.',
     },
     'en': {
       'title': 'Safety',
@@ -314,12 +347,56 @@ class AppTranslations {
       'filter_wanted': 'Wanted',
       'person_name_hint': 'Full name of the person',
       'add_person_photo': 'Add photo',
+      'year_old_one': 'year old',
+      'year_old_other': 'years old',
+      'missing_since': 'Missing since',
+      'nav_map': 'Map',
+      'nav_profile': 'Profile',
+      'launch_alert_btn': 'LAUNCH AN ALERT',
+      'share_alert_message':
+          '🚨 MISSING PERSON ALERT: {name}, {age}, missing. Help us find them! #Safety',
+      'report_and_details': 'Report & Details',
+      'no_description': 'No description',
+      'witness': 'Witness',
+      'understood': 'GOT IT',
+      'details': 'Details',
+      'close': 'Close',
+      'user': 'User',
+      'points': 'Points',
+      'connection_error_api':
+          'Could not reach the server. Check your connection.',
     },
   };
+
+  /// Every key defined for a language.
+  ///
+  /// Exposed so tooling and tests can assert that the English and French maps
+  /// stay in lockstep; a key present in only one of them renders as raw
+  /// snake_case in that language.
+  static Set<String> keysFor(String languageCode) {
+    return _localizedValues[languageCode]?.keys.toSet() ?? <String>{};
+  }
 
   String translate(String key) {
     return _localizedValues[locale.languageCode]?[key] ?? key;
   }
+
+  /// "5 years old" / "5 ans", with the correct singular form.
+  ///
+  /// French needs "an" for one and "ans" otherwise; picking the key by count
+  /// keeps call sites free of locale comparisons.
+  String ageLabel(int age) {
+    return '$age ${translate(age == 1 ? 'year_old_one' : 'year_old_other')}';
+  }
+
+  /// "Missing since Sep 14, 2026", formatted for the active locale.
+  String missingSince(DateTime date) {
+    return '${translate('missing_since')} '
+        '${DateFormat.yMMMd(locale.toString()).format(date)}';
+  }
+
+  /// Localised age for list rows, e.g. "8 - Missing".
+  String ageOnly(int age) => age.toString();
 
   static AppTranslations of(BuildContext context) {
     return AppTranslations(Localizations.localeOf(context));

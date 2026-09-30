@@ -120,7 +120,7 @@ class ProfileScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text('Fermer'),
+              child: Text(tr.translate('close')),
             ),
           ),
         ],
@@ -172,8 +172,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 15),
             Text(
-              user?.name ??
-                  (tr.translate('role') == 'Rôle' ? 'Utilisateur' : 'User'),
+              user?.name ?? tr.translate('user'),
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Text(
@@ -255,7 +254,7 @@ class ProfileScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildMiniStat(tr.translate('reports_title'), "3"),
-                  _buildMiniStat("Points", "120"),
+                  _buildMiniStat(tr.translate('points'), "120"),
                   _buildMiniStat(tr.translate('found'), "1"),
                 ],
               ),
@@ -296,7 +295,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Divider(),
             ),
 
-            // Bouton Déconnexion
+            // Sign-out button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ListTile(

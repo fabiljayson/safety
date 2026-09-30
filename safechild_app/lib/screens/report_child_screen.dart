@@ -181,12 +181,15 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
       if (!mounted) return;
       _showSuccessDialog();
     } catch (e) {
-      final errMsg = describeApiError(e);
+      final errMsg = describeApiError(
+        e,
+        connectionMessage: tr.translate('connection_error_api'),
+      );
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur: $errMsg'),
+          content: Text('${tr.translate('error')}: $errMsg'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -262,7 +265,7 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('OK, J\'AI COMPRIS'),
+            child: Text(tr.translate('understood')),
           ),
         ],
       ),
