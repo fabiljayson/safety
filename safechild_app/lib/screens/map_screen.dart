@@ -33,23 +33,33 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     bool serviceEnabled;
     LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    try {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    } catch (e) {
+      // Geolocation unavailable on this platform (e.g. Linux desktop).
+      debugPrint('Location unavailable: $e');
+      return;
+    }
     if (!serviceEnabled) return;
 
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
+    try {
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+
+      if (permission == LocationPermission.deniedForever) return;
+
+      final position = await Geolocator.getCurrentPosition();
+      final newLatLng = LatLng(position.latitude, position.longitude);
+      setState(() {
+        _currentCenter = newLatLng;
+      });
+      _mapController.move(newLatLng, 15.0);
+    } catch (e) {
+      debugPrint('Could not determine position: $e');
     }
-
-    if (permission == LocationPermission.deniedForever) return;
-
-    final position = await Geolocator.getCurrentPosition();
-    final newLatLng = LatLng(position.latitude, position.longitude);
-    setState(() {
-      _currentCenter = newLatLng;
-    });
-    _mapController.move(newLatLng, 15.0);
   }
 
   Color _getMarkerColor(MissingChild child) {
