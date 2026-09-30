@@ -112,7 +112,12 @@ class MissingChildController extends Controller
         // the authority-only gate for broadcasting an alert, and accepting it
         // here let a citizen self-verify their own report. Authorities use
         // the dedicated /verify endpoint.
-        if ($isAuthority) {
+        //
+        // Only write the flag when the caller actually sent it. Reading it
+        // unconditionally would default the omitted field to false, so an
+        // authority marking an alert "found" would silently un-verify it and
+        // drop it out of the public feed without a broadcast.
+        if ($isAuthority && $request->has('is_verified')) {
             $validated['is_verified'] = $request->boolean('is_verified');
         }
 

@@ -121,6 +121,55 @@ class MissingChildAuthorizationTest extends TestCase
         $this->assertTrue((bool) $child->fresh()->is_verified);
     }
 
+    public function test_marking_an_alert_found_does_not_unverify_it(): void
+    {
+        $authority = User::factory()->authority()->create();
+        $child = MissingChild::create([
+            'user_id' => User::factory()->parent()->create()->id,
+            'name' => 'Lucas',
+            'age' => 5,
+            'status' => 'missing',
+            'disappearance_lat' => 48.8566,
+            'disappearance_lng' => 2.3522,
+            'disappeared_at' => now()->subDay(),
+            'is_verified' => true,
+        ]);
+
+        // An omitted is_verified must not be coerced to false, otherwise
+        // closing an alert would silently retract it from the public feed.
+        $this->actingAs($authority)
+            ->putJson("/api/missing-children/{$child->id}", ['status' => 'found'])
+            ->assertOk();
+
+        $child->refresh();
+
+        $this->assertSame('found', $child->status);
+        $this->assertTrue((bool) $child->is_verified);
+    }
+
+    public function test_an_authority_may_unverify_an_alert_explicitly(): void
+    {
+        $authority = User::factory()->authority()->create();
+        $child = MissingChild::create([
+            'user_id' => User::factory()->parent()->create()->id,
+            'name' => 'Lucas',
+            'age' => 5,
+            'status' => 'missing',
+            'disappearance_lat' => 48.8566,
+            'disappearance_lng' => 2.3522,
+            'disappeared_at' => now()->subDay(),
+            'is_verified' => true,
+        ]);
+
+        // Retracting a false alarm has to stay possible, so an explicit false
+        // is honoured.
+        $this->actingAs($authority)
+            ->putJson("/api/missing-children/{$child->id}", ['is_verified' => false])
+            ->assertOk();
+
+        $this->assertFalse((bool) $child->fresh()->is_verified);
+    }
+
     public function test_update_ignores_unvalidated_fields(): void
     {
         $owner = User::factory()->parent()->create();
