@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_service.dart';
 import '../services/localization_service.dart';
+import '../theme/app_theme.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -37,12 +38,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${tr.translate('error')}: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${tr.translate('error')}: $e')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -73,12 +71,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${tr.translate('error')}: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${tr.translate('error')}: $e')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -92,15 +87,26 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(tr.translate('password')),
-        backgroundColor: Colors.blue[900],
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        // The shared app-bar style targets surface bars; this one sits on the
+        // primary colour, so the title needs the on-primary tint explicitly.
+        titleTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.lock_reset_rounded, size: 80, color: Colors.blue),
+            Icon(
+              Icons.lock_reset_rounded,
+              size: 80,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: 20),
             Text(
               _codeSent
@@ -115,7 +121,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   ? tr.translate('reset_instructions')
                   : tr.translate('forgot_instructions'),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 30),
 
@@ -129,15 +137,17 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _sendCode,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[900],
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      )
                     : Text(tr.translate('receive_code_btn')),
               ),
             ] else ...[
@@ -170,15 +180,22 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _resetPassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
+                  backgroundColor: context.colors.resolved,
+                  foregroundColor: context.colors.onStatus,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: context.colors.onStatus,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : Text(tr.translate('reset_btn')),
               ),
             ],
@@ -199,7 +216,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextField(
@@ -208,7 +225,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, color: Colors.blue[900]),
+          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(

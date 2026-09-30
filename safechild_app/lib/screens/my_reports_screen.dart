@@ -4,6 +4,10 @@ import '../services/api_service.dart';
 import '../services/localization_service.dart';
 import '../models/missing_child.dart';
 import 'child_detail_screen.dart';
+import '../theme/app_motion.dart';
+import '../widgets/app_widgets.dart';
+import '../widgets/status_badges.dart';
+import '../theme/app_theme.dart';
 
 final myReportsProvider = FutureProvider<List<MissingChild>>((ref) async {
   final api = ref.watch(apiServiceProvider);
@@ -38,12 +42,15 @@ class MyReportsScreen extends ConsumerWidget {
                     Icon(
                       Icons.list_alt_rounded,
                       size: 80,
-                      color: Colors.grey[300],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       tr.translate('no_reports'),
-                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -55,13 +62,12 @@ class MyReportsScreen extends ConsumerWidget {
               itemCount: userReports.length,
               itemBuilder: (context, index) {
                 final child = userReports[index];
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
+                return FadeSlideIn(
+                  key: ValueKey(child.id),
+                  // Stagger only the first screenful. Beyond that a per-item
+                  // delay would make the tail of a long list appear broken.
+                  delay: index < 6 ? AppMotion.stagger * index : Duration.zero,
+                  child: AppCard(
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,79 +103,15 @@ class MyReportsScreen extends ConsumerWidget {
                                           ),
                                         ),
                                       ),
-                                      if (child.alertType == 'wanted_person')
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red[50],
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                            border: Border.all(
-                                              color: Colors.red[300]!,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '🚨 ${tr.translate('filter_wanted')}',
-                                            style: TextStyle(
-                                              color: Colors.red[900],
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        )
-                                      else if (child.alertType ==
-                                          'adult_missing')
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.purple[50],
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                            border: Border.all(
-                                              color: Colors.purple[300]!,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '🧓 ${tr.translate('filter_adults')}',
-                                            style: TextStyle(
-                                              color: Colors.purple[900],
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        )
-                                      else
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue[50],
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                            border: Border.all(
-                                              color: Colors.blue[300]!,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '👶 ${tr.translate('filter_children')}',
-                                            style: TextStyle(
-                                              color: Colors.blue[900],
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
+                                      AlertTypeBadge(
+                                        child: child,
+                                        dense: true,
+                                        label: child.isWantedPerson
+                                            ? tr.translate('filter_wanted')
+                                            : child.isAdultMissing
+                                            ? tr.translate('filter_adults')
+                                            : tr.translate('filter_children'),
+                                      ),
                                     ],
                                   ),
                                   const SizedBox(height: 4),
@@ -192,13 +134,15 @@ class MyReportsScreen extends ConsumerWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: child.isVerified
-                                    ? Colors.green[50]
-                                    : Colors.amber[50],
+                                    ? context.colors.surfaceMuted
+                                    : context.colors.pending.withValues(
+                                        alpha: 0.10,
+                                      ),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: child.isVerified
-                                      ? Colors.green[300]!
-                                      : Colors.amber[400]!,
+                                      ? context.colors.borderSubtle
+                                      : context.colors.pending,
                                 ),
                               ),
                               child: Row(
@@ -210,8 +154,8 @@ class MyReportsScreen extends ConsumerWidget {
                                         : Icons.hourglass_top_rounded,
                                     size: 14,
                                     color: child.isVerified
-                                        ? Colors.green[700]
-                                        : Colors.amber[800],
+                                        ? context.colors.verified
+                                        : context.colors.pending,
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
@@ -220,8 +164,8 @@ class MyReportsScreen extends ConsumerWidget {
                                         : tr.translate('pending_approval'),
                                     style: TextStyle(
                                       color: child.isVerified
-                                          ? Colors.green[800]
-                                          : Colors.amber[900],
+                                          ? context.colors.verified
+                                          : context.colors.pending,
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -233,9 +177,8 @@ class MyReportsScreen extends ConsumerWidget {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChildDetailScreen(child: child),
+                                  AppPushRoute(
+                                    page: ChildDetailScreen(child: child),
                                   ),
                                 );
                               },

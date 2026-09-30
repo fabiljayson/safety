@@ -8,6 +8,9 @@ import '../services/api_service.dart';
 import '../services/localization_service.dart';
 import '../models/missing_child.dart';
 import 'home_screen.dart'; // to invalidate missingChildrenProvider if child status changes
+import '../widgets/status_badges.dart';
+import '../widgets/app_widgets.dart';
+import '../theme/app_theme.dart';
 
 final childSightingsProvider = FutureProvider.family<List<dynamic>, int>((
   ref,
@@ -156,10 +159,7 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
       setState(() => _sightingImage = null);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(tr.translate('sighting_success_msg')),
-          backgroundColor: Colors.green,
-        ),
+        SnackBar(content: Text(tr.translate('sighting_success_msg'))),
       );
     } catch (e) {
       if (!mounted) return;
@@ -170,7 +170,6 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
             '${tr.translate('error')}: '
             '${describeApiError(e, connectionMessage: tr.translate('connection_error_api'))}',
           ),
-          backgroundColor: Colors.redAccent,
         ),
       );
     } finally {
@@ -189,13 +188,13 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
       appBar: AppBar(
         title: Text(
           widget.child.name,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
-        backgroundColor: Colors.blue[900],
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -207,7 +206,7 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                 Container(
                   height: 300,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: context.colors.surfaceMuted,
                     image: widget.child.photoUrl != null
                         ? DecorationImage(
                             image: NetworkImage(widget.child.photoUrl!),
@@ -216,11 +215,13 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                         : null,
                   ),
                   child: widget.child.photoUrl == null
-                      ? const Center(
+                      ? Center(
                           child: Icon(
                             Icons.person,
                             size: 100,
-                            color: Colors.grey,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         )
                       : null,
@@ -238,8 +239,8 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: widget.child.status == 'missing'
-                              ? Colors.red[700]
-                              : Colors.green[700],
+                              ? context.colors.urgent
+                              : context.colors.verified,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: const [
                             BoxShadow(color: Colors.black26, blurRadius: 4),
@@ -249,8 +250,10 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                           widget.child.status == 'missing'
                               ? tr.translate('missing').toUpperCase()
                               : tr.translate('found').toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
+                          // onStatus flips with the palette so the label stays
+                          // legible against the lighter dark-mode status tone.
+                          style: TextStyle(
+                            color: context.colors.onStatus,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
@@ -258,68 +261,21 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                       ),
                       const SizedBox(width: 8),
                       // Alert Type Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: widget.child.alertType == 'wanted_person'
-                              ? Colors.red[900]
-                              : widget.child.alertType == 'adult_missing'
-                              ? Colors.purple[800]
-                              : Colors.blue[900],
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: const [
-                            BoxShadow(color: Colors.black26, blurRadius: 4),
-                          ],
-                        ),
-                        child: Text(
-                          widget.child.alertType == 'wanted_person'
-                              ? '🚨 ${tr.translate('filter_wanted').toUpperCase()}'
-                              : widget.child.alertType == 'adult_missing'
-                              ? '🧓 ${tr.translate('filter_adults').toUpperCase()}'
-                              : '👶 ${tr.translate('filter_children').toUpperCase()}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
+                      AlertTypeBadge(
+                        child: widget.child,
+                        uppercase: true,
+                        label: widget.child.isWantedPerson
+                            ? tr.translate('filter_wanted')
+                            : widget.child.isAdultMissing
+                            ? tr.translate('filter_adults')
+                            : tr.translate('filter_children'),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       if (widget.child.isVerified)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.green[800],
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
-                              BoxShadow(color: Colors.black26, blurRadius: 4),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.verified,
-                                color: Colors.white,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                tr.translate('published_alert').toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
+                        StatusBadge(
+                          label: tr.translate('published_alert').toUpperCase(),
+                          tone: StatusTone.verified,
+                          iconSize: 14,
                         ),
                     ],
                   ),
@@ -347,7 +303,7 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                         tr.ageLabel(widget.child.age),
                         style: TextStyle(
                           fontSize: 20,
-                          color: Colors.blue[900],
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -356,8 +312,8 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                   const SizedBox(height: 8),
                   Text(
                     "${tr.translate('disappeared_on')} ${widget.child.disappearedAt.day}/${widget.child.disappearedAt.month}/${widget.child.disappearedAt.year}",
-                    style: const TextStyle(
-                      color: Colors.grey,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -376,14 +332,14 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: context.colors.surfaceMuted,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Text(
                         widget.child.lastClothes!,
                         style: TextStyle(
                           fontSize: 15,
-                          color: Colors.blue[900],
+                          color: Theme.of(context).colorScheme.primary,
                           height: 1.4,
                         ),
                       ),
@@ -435,8 +391,10 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: Text(
                               tr.translate('no_sightings_msg'),
-                              style: const TextStyle(
-                                color: Colors.grey,
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                                 fontStyle: FontStyle.italic,
                               ),
                               textAlign: TextAlign.center,
@@ -480,12 +438,12 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                                       width: 70,
                                       height: 70,
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[200],
+                                        color: context.colors.surfaceMuted,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.location_on,
-                                        color: Colors.red,
+                                        color: context.colors.urgent,
                                       ),
                                     ),
                                   const SizedBox(width: 12),
@@ -509,16 +467,20 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                                           children: [
                                             Text(
                                               "${tr.translate('sighting_by')} ${sighting['user']?['name'] ?? tr.translate('witness')}",
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 12,
-                                                color: Colors.grey,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
                                               ),
                                             ),
                                             Text(
                                               "${dateStr.day}/${dateStr.month} ${tr.translate('sighting_at')} ${dateStr.hour}:${dateStr.minute.toString().padLeft(2, '0')}",
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 12,
-                                                color: Colors.grey,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
                                               ),
                                             ),
                                           ],
@@ -549,14 +511,14 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
   Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, color: Colors.blue[900], size: 22),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 22),
         const SizedBox(width: 8),
         Text(
           title,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.blue[900],
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
       ],
@@ -568,9 +530,9 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: context.colors.surfaceMuted,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: context.colors.borderSubtle),
       ),
       child: Form(
         key: _sightingFormKey,
@@ -583,9 +545,9 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
               child: Container(
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: context.colors.borderSubtle),
                 ),
                 child: _sightingImage != null
                     ? ClipRRect(
@@ -601,14 +563,14 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                         children: [
                           Icon(
                             Icons.camera_alt_outlined,
-                            color: Colors.blue[900],
+                            color: Theme.of(context).colorScheme.primary,
                             size: 30,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             tr.translate('add_sighting_photo_hint'),
                             style: TextStyle(
-                              color: Colors.blue[900],
+                              color: Theme.of(context).colorScheme.primary,
                               fontSize: 12,
                             ),
                           ),
@@ -628,9 +590,9 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey[300]!),
+                      border: Border.all(color: context.colors.borderSubtle),
                     ),
                     child: Row(
                       children: [
@@ -639,8 +601,8 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                               ? Icons.gps_fixed
                               : Icons.gps_off,
                           color: _currentPosition != null
-                              ? Colors.green
-                              : Colors.red,
+                              ? context.colors.verified
+                              : context.colors.urgent,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
@@ -664,19 +626,19 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                       horizontal: 12,
                       vertical: 10,
                     ),
-                    backgroundColor: Colors.blue[900],
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: _fetchingLocation
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         )
                       : Text(tr.translate('activate_gps_btn')),
@@ -694,7 +656,7 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                fillColor: Colors.white,
+                fillColor: Theme.of(context).colorScheme.surface,
                 filled: true,
                 contentPadding: const EdgeInsets.all(12),
               ),
@@ -707,8 +669,8 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
             ElevatedButton(
               onPressed: _isSubmittingSighting ? null : _submitSighting,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+                backgroundColor: context.colors.urgent,
+                foregroundColor: context.colors.onStatus,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -716,11 +678,11 @@ class _ChildDetailScreenState extends ConsumerState<ChildDetailScreen> {
                 elevation: 2,
               ),
               child: _isSubmittingSighting
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: context.colors.onStatus,
                         strokeWidth: 2,
                       ),
                     )

@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_service.dart';
 import '../services/localization_service.dart';
 import '../models/missing_child.dart';
-import '../services/theme_provider.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_theme.dart';
+import '../widgets/app_widgets.dart';
+import '../widgets/status_badges.dart';
 import 'auth_screen.dart';
 import 'child_detail_screen.dart';
 
@@ -52,19 +55,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final reports = ref.watch(missingChildrenProvider);
     final user = ref.watch(authProvider).value;
-    final themeMode = ref.watch(themeProvider);
     final tr = AppTranslations.of(context);
-
-    // Dynamic Card Color based on Theme
-    final cardColor = themeMode == ThemeMode.dark
-        ? Colors.lightBlue[100]
-        : Colors.blue[900];
-    final textColor = themeMode == ThemeMode.dark
-        ? Colors.blue[900]
-        : Colors.white;
-    final subTextColor = themeMode == ThemeMode.dark
-        ? Colors.blue[700]
-        : Colors.white70;
 
     return Scaffold(
       body: RefreshIndicator(
@@ -106,40 +97,32 @@ class HomeScreen extends ConsumerWidget {
                     childAspectRatio: 1.5,
                     children: [
                       _buildStatCard(
-                        tr.translate('missing_children'),
-                        "$missing",
-                        Colors.red,
-                        Icons.warning_amber_rounded,
-                        cardColor!,
-                        textColor!,
-                        subTextColor!,
+                        context: context,
+                        label: tr.translate('missing_children'),
+                        value: "$missing",
+                        accent: context.colors.urgent,
+                        icon: Icons.warning_amber_rounded,
                       ),
                       _buildStatCard(
-                        tr.translate('certified_alerts'),
-                        "$verified",
-                        Colors.blue,
-                        Icons.verified_user_outlined,
-                        cardColor,
-                        textColor,
-                        subTextColor,
+                        context: context,
+                        label: tr.translate('certified_alerts'),
+                        value: "$verified",
+                        accent: context.colors.verified,
+                        icon: Icons.verified_user_outlined,
                       ),
                       _buildStatCard(
-                        tr.translate('active_citizens'),
-                        "1,240",
-                        Colors.green,
-                        Icons.people_outline,
-                        cardColor,
-                        textColor,
-                        subTextColor,
+                        context: context,
+                        label: tr.translate('active_citizens'),
+                        value: "1,240",
+                        accent: Theme.of(context).colorScheme.primary,
+                        icon: Icons.people_outline,
                       ),
                       _buildStatCard(
-                        tr.translate('found_30d'),
-                        "12",
-                        Colors.orange,
-                        Icons.check_circle_outline,
-                        cardColor,
-                        textColor,
-                        subTextColor,
+                        context: context,
+                        label: tr.translate('found_30d'),
+                        value: "12",
+                        accent: context.colors.resolved,
+                        icon: Icons.check_circle_outline,
                       ),
                     ],
                   );
@@ -203,112 +186,81 @@ class HomeScreen extends ConsumerWidget {
                   itemCount: list.take(5).length,
                   itemBuilder: (context, index) {
                     final child = list[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: child.photoUrl != null
-                              ? NetworkImage(child.photoUrl!)
-                              : null,
-                          child: child.photoUrl == null
-                              ? const Icon(Icons.person)
-                              : null,
-                        ),
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                child.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                    return FadeSlideIn(
+                      // Stagger the first screenful only: past that a delay
+                      // would make fresh data look like it failed to load.
+                      delay: index < 6
+                          ? AppMotion.stagger * index
+                          : Duration.zero,
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
                             ),
-                            if (child.alertType == 'wanted_person')
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.red[100],
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  '🚨 ${tr.translate('filter_wanted')}',
-                                  style: TextStyle(
-                                    color: Colors.red[900],
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            else if (child.alertType == 'adult_missing')
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.purple[100],
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  '🧓 ${tr.translate('filter_adults')}',
-                                  style: TextStyle(
-                                    color: Colors.purple[900],
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            else
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[100],
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  '👶 ${tr.translate('filter_children')}',
-                                  style: TextStyle(
-                                    color: Colors.blue[900],
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            "${tr.ageLabel(child.age)} - ${child.isVerified ? '✅ ${tr.translate('certified')}' : '⏳ ${tr.translate('pending')}'}",
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: child.photoUrl != null
+                                ? NetworkImage(child.photoUrl!)
+                                : null,
+                            child: child.photoUrl == null
+                                ? const Icon(Icons.person)
+                                : null,
                           ),
-                        ),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ChildDetailScreen(child: child),
+                          title: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  child.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              AlertTypeBadge(
+                                child: child,
+                                dense: true,
+                                label: child.isWantedPerson
+                                    ? tr.translate('filter_wanted')
+                                    : child.isAdultMissing
+                                    ? tr.translate('filter_adults')
+                                    : tr.translate('filter_children'),
+                              ),
+                            ],
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Row(
+                              children: [
+                                Text(tr.ageLabel(child.age)),
+                                const SizedBox(width: AppSpacing.sm),
+                                ReviewStateTag(
+                                  isVerified: child.isVerified,
+                                  isResolved: child.status == 'found',
+                                  certifiedLabel: tr.translate('certified'),
+                                  pendingLabel: tr.translate('pending'),
+                                  resolvedLabel: tr.translate('found'),
+                                  iconSize: 12,
+                                ),
+                              ],
                             ),
-                          );
-                        },
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              AppPushRoute(
+                                page: ChildDetailScreen(child: child),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     );
                   },
@@ -323,45 +275,53 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatCard(
-    String label,
-    String value,
-    Color iconColor,
-    IconData icon,
-    Color bg,
-    Color text,
-    Color subText,
-  ) {
+  /// Stat tile. Colours are taken from the theme rather than passed in.
+  ///
+  /// The previous version branched on `themeMode` by hand and used
+  /// `Colors.lightBlue[100]` for the dark-mode fill, so in dark mode these
+  /// tiles rendered as bright blue cards floating on a black background. It
+  /// also took its `bg`/`text`/`subText` from the caller while separately
+  /// taking `iconColor` from the caller, which is why the four call sites had
+  /// drifted apart.
+  Widget _buildStatCard({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required Color accent,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
+
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        color: theme.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppRadii.lg),
+        border: Border.all(color: context.colors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: iconColor, size: 28),
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(AppRadii.sm),
+            ),
+            child: Icon(icon, color: accent, size: 20),
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 value,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: text,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
-              Text(label, style: TextStyle(color: subText, fontSize: 11)),
+              const SizedBox(height: 2),
+              Text(label, style: theme.textTheme.labelSmall),
             ],
           ),
         ],
@@ -374,62 +334,100 @@ class HomeScreen extends ConsumerWidget {
     MissingChild child,
     AppTranslations tr,
   ) {
-    return GestureDetector(
+    final scheme = Theme.of(context).colorScheme;
+
+    return PressableScale(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => ChildDetailScreen(child: child),
-          ),
+          AppPageRoute(page: ChildDetailScreen(child: child)),
         );
       },
+      borderRadius: BorderRadius.circular(AppRadii.lg),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(AppRadii.lg),
+          border: Border.all(color: context.colors.borderSubtle),
           image: child.photoUrl != null
               ? DecorationImage(
                   image: NetworkImage(child.photoUrl!),
                   fit: BoxFit.cover,
                 )
               : null,
-          color: Colors.grey[300],
+          color: child.photoUrl != null ? null : scheme.surfaceContainerHigh,
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
-            ),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Flat scrim behind the caption instead of a full-card
+            // transparent-to-black gradient. The photo stays visible across the
+            // top of the card and the caption gets an even, predictable
+            // background to sit on rather than a wash that changed contrast
+            // from top to bottom.
+            ImageScrim(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    child.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          child.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                        ),
+                      ),
+                      if (child.isVerified) ...[
+                        const SizedBox(width: AppSpacing.sm),
+                        Icon(
+                          Icons.verified_rounded,
+                          color: context.colors.verified,
+                          size: 20,
+                        ),
+                      ],
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  if (child.isVerified)
-                    const Icon(Icons.verified, color: Colors.blue, size: 20),
+                  const SizedBox(height: AppSpacing.xs),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          tr.ageLabel(child.age),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.white70),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        '·',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        child.status == 'missing'
+                            ? tr.translate('missing').toUpperCase()
+                            : tr.translate('found').toUpperCase(),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-              Text(
-                "${tr.ageLabel(child.age)} - ${child.status == 'missing' ? tr.translate('missing').toUpperCase() : tr.translate('found').toUpperCase()}",
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

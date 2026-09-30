@@ -8,6 +8,7 @@ import 'screens/main_navigation_screen.dart';
 import 'services/localization_service.dart';
 import 'services/notification_service.dart';
 import 'services/theme_provider.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,20 +62,8 @@ class _SafetyAppState extends ConsumerState<SafetyApp> {
       // this runs above the Localizations widget MaterialApp creates, so there is
       // no Localizations ancestor to read yet.
       title: AppTranslations(locale).translate('title'),
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.light,
-        ),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.dark,
-        ),
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       themeMode: themeMode,
       locale: locale,
       supportedLocales: _supportedLocales,

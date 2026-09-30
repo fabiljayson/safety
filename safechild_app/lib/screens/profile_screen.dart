@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/localization_service.dart';
 import '../services/theme_provider.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_theme.dart';
 import 'auth_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -28,14 +30,14 @@ class ProfileScreen extends ConsumerWidget {
               Navigator.of(context).pop();
               await ref.read(authProvider.notifier).logout();
               if (context.mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const AuthScreen()),
-                );
+                Navigator.of(
+                  context,
+                ).pushReplacement(AppPushRoute(page: const AuthScreen()));
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
             ),
             child: Text(tr.translate('sign_out').toUpperCase()),
           ),
@@ -89,19 +91,24 @@ class ProfileScreen extends ConsumerWidget {
             Text(
               tr.translate('safety_subtitle'),
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 14),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Text(
                 tr.translate('app_version'),
                 style: TextStyle(
-                  color: Colors.blue[900],
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -114,8 +121,8 @@ class ProfileScreen extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[900],
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -146,7 +153,7 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundColor: Colors.blue[50],
+                    backgroundColor: context.colors.surfaceMuted,
                     backgroundImage: const NetworkImage(
                       'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                     ),
@@ -158,7 +165,7 @@ class ProfileScreen extends ConsumerWidget {
                       onTap: () {}, // Future profile photo update
                       child: CircleAvatar(
                         radius: 18,
-                        backgroundColor: Colors.blue[900],
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         child: const Icon(
                           Icons.camera_alt,
                           size: 18,
@@ -177,7 +184,9 @@ class ProfileScreen extends ConsumerWidget {
             ),
             Text(
               user?.email ?? "email@example.com",
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 30),
 
@@ -193,7 +202,7 @@ class ProfileScreen extends ConsumerWidget {
                   themeMode == ThemeMode.dark
                       ? Icons.dark_mode
                       : Icons.light_mode,
-                  color: Colors.blue[900],
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 value: themeMode == ThemeMode.dark,
                 onChanged: (val) {
@@ -217,7 +226,10 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.language, color: Colors.blue[900]),
+                        Icon(
+                          Icons.language,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         const SizedBox(width: 16),
                         Text(
                           tr.translate('language'),
@@ -253,9 +265,9 @@ class ProfileScreen extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildMiniStat(tr.translate('reports_title'), "3"),
-                  _buildMiniStat(tr.translate('points'), "120"),
-                  _buildMiniStat(tr.translate('found'), "1"),
+                  _buildMiniStat(context, tr.translate('reports_title'), "3"),
+                  _buildMiniStat(context, tr.translate('points'), "120"),
+                  _buildMiniStat(context, tr.translate('found'), "1"),
                 ],
               ),
             ),
@@ -303,22 +315,25 @@ class ProfileScreen extends ConsumerWidget {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red[50],
+                    color: context.colors.surfaceMuted,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.logout_rounded, color: Colors.red),
+                  child: Icon(
+                    Icons.logout_rounded,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                 ),
                 title: Text(
                   tr.translate('sign_out'),
-                  style: const TextStyle(
-                    color: Colors.red,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                trailing: const Icon(
+                trailing: Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
-                  color: Colors.red,
+                  color: Theme.of(context).colorScheme.error,
                 ),
               ),
             ),
@@ -348,14 +363,20 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMiniStat(String label, String value) {
+  Widget _buildMiniStat(BuildContext context, String label, String value) {
     return Column(
       children: [
         Text(
           value,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        Text(
+          label,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: 12,
+          ),
+        ),
       ],
     );
   }
@@ -372,12 +393,13 @@ class ProfileScreen extends ConsumerWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
-                : Colors.blue[50],
+            // surfaceMuted already resolves per brightness; the old
+            // manual dark-branch picked a fixed translucent white that
+            // never matched the rest of the dark palette.
+            color: context.colors.surfaceMuted,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: Colors.blue[900]),
+          child: Icon(icon, color: Theme.of(context).colorScheme.primary),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),

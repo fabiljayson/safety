@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_service.dart';
 import '../services/localization_service.dart';
 import '../models/user.dart';
+import '../theme/app_motion.dart';
 import 'forgot_password_screen.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((
@@ -136,7 +137,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               content: Text(
                 '${tr.translate('error')}: ${describeApiError(e, connectionMessage: tr.translate('connection_error_api'))}',
               ),
-              backgroundColor: Colors.redAccent,
             ),
           );
         },
@@ -146,18 +146,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(color: Colors.blue[900]),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.blue[800]!.withValues(alpha: 0.8),
-                  Colors.black.withValues(alpha: 0.9),
-                ],
-              ),
-            ),
+          // Flat navy field. This replaces a blue-to-black LinearGradient whose
+          // only effect was to darken the lower half of the login form, which
+          // also swallowed the error text on the primary button.
+          ColoredBox(
+            color: Theme.of(context).colorScheme.primary,
+            child: const SizedBox.expand(),
           ),
           SafeArea(
             child: Center(
@@ -232,7 +226,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue[900],
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -258,7 +252,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 _obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility,
-                                color: Colors.blue[900],
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 20,
                               ),
                               onPressed: () => setState(
@@ -274,9 +268,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const ForgotPasswordScreen(),
+                                    AppPushRoute(
+                                      page: const ForgotPasswordScreen(),
                                     ),
                                   );
                                 },
@@ -296,8 +289,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               child: ElevatedButton(
                                 onPressed: _submit,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue[900],
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 15,
                                   ),
@@ -325,7 +322,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               _isLogin
                                   ? tr.translate('no_account')
                                   : tr.translate('have_account'),
-                              style: TextStyle(color: Colors.blue[900]),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ),
                         ],
@@ -352,18 +351,25 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        // Matches the inputDecorationTheme fill, so the container and the
+        // field stay the same tone in both brightnesses.
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
-        style: const TextStyle(color: Colors.black87),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
-          prefixIcon: Icon(icon, size: 20, color: Colors.blue[900]),
+          labelStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          prefixIcon: Icon(
+            icon,
+            size: 20,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(

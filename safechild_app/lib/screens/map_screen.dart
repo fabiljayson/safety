@@ -6,6 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/missing_child.dart';
 import '../services/localization_service.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_theme.dart';
 import 'report_child_screen.dart';
 import 'home_screen.dart'; // Pour missingChildrenProvider et dangerZonesProvider
 import 'child_detail_screen.dart';
@@ -63,9 +65,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Color _getMarkerColor(MissingChild child) {
-    if (child.alertType == 'wanted_person') return Colors.red[700]!;
-    if (child.alertType == 'adult_missing') return Colors.purple[700]!;
-    return child.isVerified ? Colors.blue[700]! : Colors.amber[800]!;
+    if (child.alertType == 'wanted_person') return context.colors.urgent;
+    if (child.alertType == 'adult_missing') return context.colors.adultMissing;
+    return child.isVerified
+        ? Theme.of(context).colorScheme.primary
+        : context.colors.pending;
   }
 
   @override
@@ -97,8 +101,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                             ),
                             radius: 50 * zone.weight,
                             useRadiusInMeter: true,
-                            color: Colors.red.withValues(alpha: 0.3),
-                            borderColor: Colors.red.withValues(alpha: 0.6),
+                            color: context.colors.urgent.withValues(alpha: 0.3),
+                            borderColor: context.colors.urgent.withValues(
+                              alpha: 0.6,
+                            ),
                             borderStrokeWidth: 2,
                           ),
                         )
@@ -123,13 +129,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                             width: 20,
                             height: 20,
                             decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.3),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.3),
                               shape: BoxShape.circle,
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.my_location,
-                            color: Colors.blue,
+                            color: Theme.of(context).colorScheme.primary,
                             size: 24,
                           ),
                         ],
@@ -204,25 +212,29 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   _buildFilterChip(
                     'all',
                     tr.translate('filter_all'),
-                    Colors.blue[900]!,
+                    Theme.of(context).colorScheme.primary,
+                    icon: Icons.filter_alt_off_rounded,
                   ),
                   const SizedBox(width: 6),
                   _buildFilterChip(
                     'child_missing',
-                    '👶 ${tr.translate('filter_children')}',
-                    Colors.blue[700]!,
+                    tr.translate('filter_children'),
+                    context.colors.urgent,
+                    icon: Icons.child_care_rounded,
                   ),
                   const SizedBox(width: 6),
                   _buildFilterChip(
                     'adult_missing',
-                    '🧓 ${tr.translate('filter_adults')}',
-                    Colors.purple[700]!,
+                    tr.translate('filter_adults'),
+                    context.colors.adultMissing,
+                    icon: Icons.person_rounded,
                   ),
                   const SizedBox(width: 6),
                   _buildFilterChip(
                     'wanted_person',
-                    '🚨 ${tr.translate('filter_wanted')}',
-                    Colors.red[700]!,
+                    tr.translate('filter_wanted'),
+                    context.colors.urgent,
+                    icon: Icons.campaign_rounded,
                   ),
                 ],
               ),
@@ -241,14 +253,16 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       ? tr.translate('map_mode')
                       : tr.translate('risk_zones'),
                   icon: _showHeatmap ? Icons.map : Icons.local_fire_department,
-                  color: _showHeatmap ? Colors.blue : Colors.red,
+                  color: _showHeatmap
+                      ? Theme.of(context).colorScheme.primary
+                      : context.colors.urgent,
                   onPressed: () => setState(() => _showHeatmap = !_showHeatmap),
                 ),
                 const SizedBox(height: 12),
                 _buildMapButton(
                   label: tr.translate('my_position'),
                   icon: Icons.my_location,
-                  color: Colors.blue[900]!,
+                  color: Theme.of(context).colorScheme.primary,
                   onPressed: _determinePosition,
                 ),
               ],
@@ -260,45 +274,67 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         onPressed: () {
           Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (_) => const ReportChildScreen()));
+          ).push(AppPushRoute(page: const ReportChildScreen()));
         },
         label: Text(
           tr.translate('launch_alert_btn'),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         icon: const Icon(Icons.add_alert),
-        backgroundColor: Colors.red,
+        backgroundColor: context.colors.urgent,
+        foregroundColor: context.colors.onStatus,
       ),
     );
   }
 
-  Widget _buildFilterChip(String filterKey, String label, Color color) {
+  Widget _buildFilterChip(
+    String filterKey,
+    String label,
+    Color color, {
+    IconData? icon,
+  }) {
     final isSelected = _selectedFilter == filterKey;
-    return GestureDetector(
+    final colors = context.colors;
+    final scheme = Theme.of(context).colorScheme;
+
+    // A flat fill plus a hairline border instead of the previous
+    // boxShadow + white border, which doubled up into a thick white ring on
+    // selection and read as a "sticker".
+    final background = isSelected
+        ? color
+        : scheme.surface.withValues(alpha: 0.94);
+    final foreground = isSelected ? colors.onStatus : scheme.onSurface;
+
+    return PressableScale(
       onTap: () => setState(() => _selectedFilter = filterKey),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      borderRadius: BorderRadius.circular(AppRadii.pill),
+      child: AnimatedContainer(
+        duration: AppMotion.fast,
+        curve: AppMotion.standard,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? color : Colors.white.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+          color: background,
+          borderRadius: BorderRadius.circular(AppRadii.pill),
+          border: Border.all(color: isSelected ? color : colors.borderSubtle),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 14, color: foreground),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: foreground,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+              ),
             ),
           ],
-          border: isSelected
-              ? Border.all(color: Colors.white, width: 1.5)
-              : null,
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black87,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-            fontSize: 12,
-          ),
         ),
       ),
     );
@@ -332,7 +368,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         FloatingActionButton.small(
           heroTag: label,
           onPressed: onPressed,
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           child: Icon(icon, color: color),
         ),
       ],
@@ -353,7 +389,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             Row(
               children: [
                 if (child.isVerified)
-                  const Icon(Icons.verified, color: Colors.blue, size: 20),
+                  Icon(
+                    Icons.verified,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
                 const SizedBox(width: 8),
                 Text(
                   child.name,
@@ -395,9 +435,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => ChildDetailScreen(child: child),
-                        ),
+                        AppPushRoute(page: ChildDetailScreen(child: child)),
                       );
                     },
                     icon: const Icon(Icons.remove_red_eye_outlined),
@@ -406,8 +444,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       style: const TextStyle(fontSize: 12),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[900],
-                      foregroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ),

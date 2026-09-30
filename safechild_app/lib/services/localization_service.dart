@@ -196,7 +196,7 @@ class AppTranslations {
       'nav_profile': 'Profil',
       'launch_alert_btn': 'LANCER UNE ALERTE',
       'share_alert_message':
-          '🚨 ALERTE DISPARITION : {name}, {age} ans disparu(e). Aidez-nous à le/la retrouver ! #Safety',
+          'ALERTE DISPARITION : {name}, {age} ans disparu(e). Aidez-nous à le/la retrouver ! #Safety',
       'report_and_details': 'Signaler & Détails',
       'no_description': 'Pas de description',
       'witness': 'Témoin',
@@ -354,7 +354,7 @@ class AppTranslations {
       'nav_profile': 'Profile',
       'launch_alert_btn': 'LAUNCH AN ALERT',
       'share_alert_message':
-          '🚨 MISSING PERSON ALERT: {name}, {age}, missing. Help us find them! #Safety',
+          'MISSING PERSON ALERT: {name}, {age}, missing. Help us find them! #Safety',
       'report_and_details': 'Report & Details',
       'no_description': 'No description',
       'witness': 'Witness',

@@ -7,6 +7,7 @@ import 'profile_screen.dart';
 import 'notifications_screen.dart';
 import 'community_screen.dart';
 import '../services/localization_service.dart';
+import '../theme/app_motion.dart';
 import 'auth_screen.dart';
 
 class MainNavigationScreen extends ConsumerStatefulWidget {
@@ -42,7 +43,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue[900],
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 4,
         iconTheme: const IconThemeData(color: Colors.white),
         leading: _selectedIndex == 0
@@ -131,9 +132,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           IconButton(
             icon: const Icon(Icons.group_outlined, color: Colors.white),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const CommunityScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(AppPageRoute(page: const CommunityScreen()));
             },
           ),
           IconButton(
@@ -142,9 +143,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(AppPushRoute(page: const NotificationsScreen()));
             },
           ),
           const SizedBox(width: 8),
@@ -169,7 +170,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           unselectedItemColor: Colors.white60,
           showUnselectedLabels: true,
           elevation: 0,
-          backgroundColor: Colors.blue[900],
+          backgroundColor: Theme.of(context).colorScheme.primary,
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 12,

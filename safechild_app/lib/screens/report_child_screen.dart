@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import '../services/api_service.dart';
 import '../services/ai_service.dart';
 import '../services/localization_service.dart';
+import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
 class ReportChildScreen extends ConsumerStatefulWidget {
@@ -188,10 +189,10 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${tr.translate('error')}: $errMsg'),
-          backgroundColor: Colors.redAccent,
-        ),
+        // No custom background: the theme's floating snackbar is already
+        // high-contrast in both light and dark mode, which a hand-picked
+        // accent red was not.
+        SnackBar(content: Text('${tr.translate('error')}: $errMsg')),
       );
     } finally {
       if (mounted) {
@@ -209,9 +210,9 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Column(
           children: [
-            const Icon(
+            Icon(
               Icons.verified_user_outlined,
-              color: Colors.blue,
+              color: Theme.of(context).colorScheme.primary,
               size: 60,
             ),
             const SizedBox(height: 10),
@@ -228,24 +229,31 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
             Text(
               tr.translate('alert_submitted_desc'),
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
+              style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
+                color: context.colors.surfaceMuted,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.blue[200]!),
+                border: Border.all(color: context.colors.borderSubtle),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue[900], size: 20),
+                  Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       tr.translate('authority_notice_desc'),
-                      style: TextStyle(color: Colors.blue[900], fontSize: 12),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
@@ -258,8 +266,8 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
             onPressed: () =>
                 Navigator.of(context).popUntil((route) => route.isFirst),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[900],
-              foregroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               minimumSize: const Size(double.infinity, 45),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -304,16 +312,16 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                       margin: const EdgeInsets.only(bottom: 20),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: context.colors.surfaceMuted,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue[200]!),
+                        border: Border.all(color: context.colors.borderSubtle),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
                             Icons.shield_outlined,
-                            color: Colors.blue[900],
+                            color: Theme.of(context).colorScheme.primary,
                             size: 24,
                           ),
                           const SizedBox(width: 10),
@@ -325,7 +333,9 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                                   tr.translate('authority_notice_title'),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.blue[900],
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -333,7 +343,9 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                                 Text(
                                   tr.translate('authority_notice_desc'),
                                   style: TextStyle(
-                                    color: Colors.blue[800],
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -349,7 +361,7 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                     Container(
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
@@ -365,19 +377,19 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                             type: 'child_missing',
                             label: tr.translate('filter_children'),
                             icon: Icons.child_care,
-                            activeColor: Colors.blue[700]!,
+                            activeColor: Theme.of(context).colorScheme.primary,
                           ),
                           _buildTypeOption(
                             type: 'adult_missing',
                             label: tr.translate('filter_adults'),
                             icon: Icons.person,
-                            activeColor: Colors.purple[700]!,
+                            activeColor: context.colors.adultMissing,
                           ),
                           _buildTypeOption(
                             type: 'wanted_person',
                             label: tr.translate('filter_wanted'),
                             icon: Icons.warning_amber_rounded,
-                            activeColor: Colors.red[700]!,
+                            activeColor: context.colors.urgent,
                           ),
                         ],
                       ),
@@ -389,12 +401,12 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                       child: Container(
                         height: 200,
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: context.colors.surfaceMuted,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: _facesDetected > 0
-                                ? Colors.green
-                                : Colors.grey[300]!,
+                                ? context.colors.verified
+                                : context.colors.borderSubtle,
                             width: 2,
                           ),
                         ),
@@ -417,14 +429,20 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                                   Icon(
                                     Icons.add_a_photo_outlined,
                                     size: 45,
-                                    color: Colors.blue[900],
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     _selectedAlertType == 'child_missing'
                                         ? tr.translate('add_child_photo')
                                         : tr.translate('add_person_photo'),
-                                    style: TextStyle(color: Colors.blue[900]),
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -454,7 +472,7 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Colors.green,
+                                    color: context.colors.verified,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Row(
@@ -487,15 +505,21 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red.shade50,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.error.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.red.shade200),
+                          border: Border.all(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.error.withValues(alpha: 0.30),
+                          ),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.location_off_outlined,
-                              color: Colors.red.shade700,
+                              color: Theme.of(context).colorScheme.error,
                               size: 20,
                             ),
                             const SizedBox(width: 10),
@@ -503,7 +527,7 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                               child: Text(
                                 _locationError!,
                                 style: TextStyle(
-                                  color: Colors.red.shade800,
+                                  color: Theme.of(context).colorScheme.error,
                                   fontSize: 12,
                                 ),
                               ),
@@ -552,8 +576,10 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
                     ElevatedButton(
                       onPressed: _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[900],
-                        foregroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -608,14 +634,18 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
             children: [
               Icon(
                 icon,
-                color: isSelected ? activeColor : Colors.grey[600],
+                color: isSelected
+                    ? activeColor
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 24,
               ),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? activeColor : Colors.grey[700],
+                  color: isSelected
+                      ? activeColor
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 12,
                 ),
@@ -634,7 +664,7 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
         label,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color: Colors.blue[900],
+          color: Theme.of(context).colorScheme.primary,
           fontSize: 16,
         ),
       ),
@@ -652,7 +682,7 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -668,7 +698,7 @@ class _ReportChildScreenState extends ConsumerState<ReportChildScreen> {
         maxLines: maxLines,
         decoration: InputDecoration(
           hintText: hint,
-          prefixIcon: Icon(icon, color: Colors.blue[900]),
+          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(18),
         ),

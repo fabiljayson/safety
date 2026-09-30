@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_screen.dart';
 import '../services/localization_service.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_theme.dart';
 
 // Data model for a community post
 class CommunityPost {
@@ -177,7 +179,7 @@ class CommunityScreen extends ConsumerWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                fillColor: Colors.grey[100],
+                fillColor: Theme.of(context).colorScheme.surfaceContainer,
                 filled: true,
               ),
             ),
@@ -192,8 +194,8 @@ class CommunityScreen extends ConsumerWidget {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[900],
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -258,7 +260,9 @@ class CommunityScreen extends ConsumerWidget {
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[100],
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainer,
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                   child: Column(
@@ -287,9 +291,11 @@ class CommunityScreen extends ConsumerWidget {
                                   ),
                                   child: Text(
                                     tr.translate('like'),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.grey,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -325,7 +331,10 @@ class CommunityScreen extends ConsumerWidget {
                     ),
                     const SizedBox(width: 10),
                     IconButton(
-                      icon: Icon(Icons.send, color: Colors.blue[900]),
+                      icon: Icon(
+                        Icons.send,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       onPressed: () {
                         if (controller.text.isNotEmpty) {
                           ref
@@ -364,15 +373,21 @@ class CommunityScreen extends ConsumerWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.blue[50],
+            color: context.colors.surfaceMuted,
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: Colors.blue),
+                Icon(
+                  Icons.info_outline,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     tr.translate('community_info'),
-                    style: const TextStyle(fontSize: 13, color: Colors.blue),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ],
@@ -384,96 +399,113 @@ class CommunityScreen extends ConsumerWidget {
               itemCount: posts.length,
               itemBuilder: (context, index) {
                 final post = posts[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(post.userPhoto),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  post.userName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  tr.translate('time_ago'),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          post.content,
-                          style: const TextStyle(fontSize: 14, height: 1.4),
-                        ),
-                        const SizedBox(height: 12),
-                        const Divider(),
-                        Row(
-                          children: [
-                            TextButton.icon(
-                              onPressed: () => ref
-                                  .read(communityProvider.notifier)
-                                  .toggleLike(post.id),
-                              icon: Icon(
-                                post.isLiked
-                                    ? Icons.thumb_up
-                                    : Icons.thumb_up_alt_outlined,
-                                size: 20,
-                                color: post.isLiked
-                                    ? Colors.blue[900]
-                                    : Colors.grey[600],
+                return FadeSlideIn(
+                  // Stagger the first screenful so the feed reads as
+                  // arriving in sequence rather than snapping in at once.
+                  delay: index < 6 ? AppMotion.stagger * index : Duration.zero,
+                  child: Card(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(post.userPhoto),
                               ),
-                              label: Text(
-                                "${post.likes}",
-                                style: TextStyle(
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    post.userName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    tr.translate('time_ago'),
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            post.content,
+                            style: const TextStyle(fontSize: 14, height: 1.4),
+                          ),
+                          const SizedBox(height: 12),
+                          const Divider(),
+                          Row(
+                            children: [
+                              TextButton.icon(
+                                onPressed: () => ref
+                                    .read(communityProvider.notifier)
+                                    .toggleLike(post.id),
+                                icon: Icon(
+                                  post.isLiked
+                                      ? Icons.thumb_up
+                                      : Icons.thumb_up_alt_outlined,
+                                  size: 20,
                                   color: post.isLiked
-                                      ? Colors.blue[900]
-                                      : Colors.grey,
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                ),
+                                label: Text(
+                                  "${post.likes}",
+                                  style: TextStyle(
+                                    color: post.isLiked
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 20),
-                            TextButton.icon(
-                              onPressed: () => _showCommentsSheet(
-                                context,
-                                ref,
-                                post,
-                                user?.name ?? "User",
-                                tr,
+                              const SizedBox(width: 20),
+                              TextButton.icon(
+                                onPressed: () => _showCommentsSheet(
+                                  context,
+                                  ref,
+                                  post,
+                                  user?.name ?? "User",
+                                  tr,
+                                ),
+                                icon: Icon(
+                                  Icons.chat_bubble_outline,
+                                  size: 20,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                                label: Text(
+                                  "${post.comments.length} ${tr.translate('comments')}",
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
                               ),
-                              icon: Icon(
-                                Icons.chat_bubble_outline,
-                                size: 20,
-                                color: Colors.grey[600],
-                              ),
-                              label: Text(
-                                "${post.comments.length} ${tr.translate('comments')}",
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -485,8 +517,11 @@ class CommunityScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
             _showNewPostSheet(context, ref, user?.name ?? "User", tr),
-        backgroundColor: Colors.blue[900],
-        child: const Icon(Icons.add_comment, color: Colors.white),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(
+          Icons.add_comment,
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
       ),
     );
   }
