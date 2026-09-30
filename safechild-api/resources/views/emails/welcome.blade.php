@@ -1,19 +1,19 @@
 <x-mail::message>
-# Bienvenue parmi nous, {{ $user->name }} !
+# {{ __('Welcome aboard, :name!', ['name' => $user->name]) }}
 
-Merci d'avoir rejoint la communauté **SafeChild**. 🛡️
+{{ __("Thanks for joining the **SafeChild** community. 🛡️") }}
 
-Votre compte a été créé avec succès. Ensemble, nous renforçons la vigilance pour la sécurité de nos enfants.
+{{ __('Your account has been created successfully. Together we strengthen vigilance for the safety of our children.') }}
 
 <x-mail::button :url="config('app.url')">
-Accéder à la plateforme
+{{ __('Open the platform') }}
 </x-mail::button>
 
-En cas de besoin, vous pouvez maintenant :
-- Signaler une disparition en temps réel.
-- Consulter la carte des alertes actives.
-- Participer aux échanges de la communauté.
+{{ __('If you need to, you can now:') }}
+- {{ __('Report a disappearance in real time.') }}
+- {{ __('Consult the map of active alerts.') }}
+- {{ __('Take part in community discussions.') }}
 
-Merci pour votre engagement,  
-L'équipe {{ config('app.name') }}
+{{ __('Thank you for your commitment,') }}
+{{ __('The :app team', ['app' => config('app.name')]) }}
 </x-mail::message>

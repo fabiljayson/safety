@@ -26,7 +26,7 @@ class WebAuthController extends Controller
             if ($user->role !== 'authority') {
                 Auth::logout();
                 throw ValidationException::withMessages([
-                    'email' => ['Accès refusé. Seules les autorités peuvent accéder à cette interface.'],
+                    'email' => ['Access denied. Only authorities can access this interface.'],
                 ]);
             }
 
@@ -36,7 +36,7 @@ class WebAuthController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Les identifiants fournis ne correspondent pas à nos enregistrements.',
+            'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
 

@@ -90,13 +90,13 @@ class DashboardController extends Controller
             $this->notificationService->broadcastAlert($child);
         }
 
-        return back()->with('success', "Le signalement de {$child->name} a été validé et diffusé aux citoyens alentours.");
+        return back()->with('success', "The report for {$child->name} has been validated and broadcast to nearby citizens.");
     }
 
     public function markAsFound(MissingChild $child)
     {
         $child->update(['status' => 'found']);
 
-        return back()->with('success', "Le dossier de {$child->name} a été clôturé (Retrouvé(e)).");
+        return back()->with('success', "The case for {$child->name} has been closed (Found).");
     }
 }

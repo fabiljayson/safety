@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Create Authority
         $authority = User::create([
-            'name' => 'Police Nationale',
+            'name' => 'National Police',
             'email' => 'police@safechild.gov',
             'password' => Hash::make('password'),
             'role' => 'authority',
@@ -44,8 +44,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Alice Smith',
             'age' => 8,
             'photo_url' => 'https://images.unsplash.com/photo-1517677129300-27b2ae498677?w=300',
-            'description' => 'Cheveux blonds, yeux bleus. Elle a un petit grain de beauté sur la joue droite.',
-            'last_clothes' => 'T-shirt rouge à paillettes, jean bleu clair, baskets blanches.',
+            'description' => 'Blonde hair, blue eyes. She has a small beauty mark on her right cheek.',
+            'last_clothes' => 'Sparkly red T-shirt, light blue jeans, white sneakers.',
             'status' => 'missing',
             'disappearance_lat' => 48.8566,
             'disappearance_lng' => 2.3522,
@@ -58,8 +58,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Lucas Martin',
             'age' => 5,
             'photo_url' => 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=300',
-            'description' => 'Cheveux bruns courts. Lunettes rouges à monture ronde. Trés timide.',
-            'last_clothes' => 'Sweat à capuche vert kaki, pantalon noir de jogging, sac à dos grenouille verte.',
+            'description' => 'Short brown hair. Round red-framed glasses. Very shy.',
+            'last_clothes' => 'Khaki hooded sweatshirt, black tracksuit trousers, green frog backpack.',
             'status' => 'missing',
             'disappearance_lat' => 48.8666,
             'disappearance_lng' => 2.3333,
@@ -73,7 +73,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $citizen->id,
             'lat' => 48.8584,
             'lng' => 2.3488,
-            'description' => 'Aperçue près du manège du square. Elle semblait chercher son chemin.',
+            'description' => 'Seen near the park carousel. She seemed to be looking for her way.',
             'sighted_at' => now()->subDays(1),
         ]);
 
@@ -82,7 +82,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $citizen->id,
             'lat' => 48.8530,
             'lng' => 2.3610,
-            'description' => 'Semble marcher avec un individu portant une veste noire. Elle avait l\'air fatiguée.',
+            'description' => 'Appears to be walking with someone wearing a black jacket. She looked tired.',
             'sighted_at' => now()->subHours(12),
         ]);
 
@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $citizen->id,
             'lat' => 48.8700,
             'lng' => 2.3200,
-            'description' => 'Aperçu assis seul sur un banc près de la station de métro St-Lazare.',
+            'description' => 'Spotted sitting alone on a bench near the St-Lazare metro station.',
             'sighted_at' => now()->subHours(6),
         ]);
     }

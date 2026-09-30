@@ -50,6 +50,22 @@ Seeded logins (password `password` for both):
 | Authority | `police@safechild.gov` |
 | Parent | `parent@example.com` |
 
+## Language
+
+**English is the default everywhere.** The Flutter app opens in English unless
+the device language is French, and the admin panel and landing page default to
+English with a `EN` / `FR` toggle.
+
+French remains fully supported: the app keeps a complete French translation and
+`lang/fr.json` covers every admin panel string. Add new strings to **both**
+languages — a key present in only one renders as raw snake_case or a raw French
+sentence, which is easy to miss. Tests on both sides assert the two languages
+stay in lockstep.
+
+API responses, push-notification bodies and the seeded demo content are English
+only, since the client and the notification tray are not locale-aware. The
+admin panel is fully translated in both languages.
+
 See each subdirectory's README for the full setup.
 
 ## How an alert is published

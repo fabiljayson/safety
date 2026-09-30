@@ -27,7 +27,7 @@ class PasswordResetController extends Controller
 
         if (! $user) {
             // We return success even if user not found for security reasons
-            return response()->json(['message' => 'Si cet email existe, un code de réinitialisation a été envoyé.']);
+            return response()->json(['message' => 'If this email exists, a reset code has been sent.']);
         }
 
         // Generate a 6-digit OTP
@@ -47,7 +47,7 @@ class PasswordResetController extends Controller
         try {
             Mail::send([], [], function ($message) use ($user, $token) {
                 $message->to($user->email)
-                    ->subject('Code de réinitialisation Safety 🛡️')
+                    ->subject('Safety reset code 🛡️')
                     ->html("<h1>Réinitialisation de mot de passe</h1>
                            <p>Bonjour {$user->name},</p>
                            <p>Votre code de réinitialisation est : <b>{$token}</b></p>
@@ -59,7 +59,7 @@ class PasswordResetController extends Controller
             return response()->json(['message' => 'Erreur lors de l\'envoi de l\'email.'], 500);
         }
 
-        return response()->json(['message' => 'Un code de réinitialisation a été envoyé à votre adresse email.']);
+        return response()->json(['message' => 'A reset code has been sent to your email address.']);
     }
 
     public function resetPassword(Request $request)
@@ -96,14 +96,14 @@ class PasswordResetController extends Controller
                     ->update(['attempts' => $attempts]);
             }
 
-            throw ValidationException::withMessages(['token' => ['Le code de réinitialisation est invalide ou a expiré.']]);
+            throw ValidationException::withMessages(['token' => ['The reset code is invalid or has expired.']]);
         }
 
         // Check expiry (1 hour)
         if (now()->parse($record->created_at)->addHour()->isPast()) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-            throw ValidationException::withMessages(['token' => ['Ce code a expiré. Veuillez en demander un nouveau.']]);
+            throw ValidationException::withMessages(['token' => ['This code has expired. Please request a new one.']]);
         }
 
         $user = User::where('email', $request->email)->first();
@@ -125,6 +125,6 @@ class PasswordResetController extends Controller
         // Delete token
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-        return response()->json(['message' => 'Votre mot de passe a été réinitialisé avec succès.']);
+        return response()->json(['message' => 'Your password has been reset successfully.']);
     }
 }

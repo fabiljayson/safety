@@ -89,13 +89,34 @@ the top-level shape.
 - Nested user data is restricted to `id`, `name` and `role`. The FCM token and
   phone number are never serialized.
 
+## Language
+
+The admin panel and the landing page are bilingual, with **English as the
+default**. `SetLocale` middleware applies `session('locale')`, and
+`GET /lang/{locale}` switches it between `en` and `fr`.
+
+Translations live in `lang/en.json` and `lang/fr.json`, keyed by the French
+source string. When adding markup to a view, wrap user-facing text in
+`__('...')` and add the key to **both** files — a key present in only one
+renders as the raw French string in the other locale, which is invisible in the
+console.
+
+API responses, push-notification bodies and the seeded demo content are English
+only, because they are consumed by the Flutter client and by the notification
+tray rather than the admin panel.
+
 ## Tests
 
 ```bash
 ./vendor/bin/pint --test   # code style
-php artisan test           # 31 tests
+php artisan test           # 38 tests
 ```
 
 `tests/Feature/MissingChildAuthorizationTest.php` and
-`tests/Feature/ReportAndAuthHardeningTest.php` lock in the rules above,
-including that only the verification transition triggers a broadcast.
+`tests/Feature/ReportAndAuthHardeningTest.php` lock in the authorization rules
+above, including that only the verification transition triggers a broadcast.
+
+`tests/Feature/TranslationCoverageTest.php` walks every Blade view recursively
+and fails if a `__()` key is missing from a language file or if the two files
+drift apart. `tests/Feature/RenderI18nTest.php` renders the landing page and the
+admin login in both locales and asserts no French leaks into the English output.

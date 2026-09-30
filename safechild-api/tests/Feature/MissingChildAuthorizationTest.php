@@ -243,7 +243,10 @@ class MissingChildAuthorizationTest extends TestCase
 
         $this->actingAs(User::factory()->citizen()->create())
             ->postJson("/api/missing-children/{$child->id}/verify")
-            ->assertForbidden();
+            ->assertForbidden()
+            // The API speaks English to the client; a French string here would
+            // surface verbatim in the app's error snackbar.
+            ->assertJson(['message' => 'Unauthorized. Only authorities can verify an alert.']);
 
         $this->assertFalse((bool) $child->fresh()->is_verified);
     }

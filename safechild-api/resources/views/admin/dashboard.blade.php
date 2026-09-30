@@ -37,14 +37,14 @@
         <div class="flex flex-wrap items-center gap-2">
             <span class="text-sm font-medium text-gray-700">{{ __('Catégories:') }}</span>
             <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['type' => 'all'])) }}" class="px-3 py-1 text-xs rounded-full {{ !request('type') || request('type') === 'all' ? 'bg-blue-900 text-white font-bold' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">Tous</a>
-            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['type' => 'child_missing'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('type') === 'child_missing' ? 'bg-blue-600 text-white font-bold' : 'bg-blue-50 text-blue-700 hover:bg-blue-100' }}">👶 Enfants</a>
-            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['type' => 'adult_missing'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('type') === 'adult_missing' ? 'bg-purple-600 text-white font-bold' : 'bg-purple-50 text-purple-700 hover:bg-purple-100' }}">🧓 Adultes</a>
-            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['type' => 'wanted_person'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('type') === 'wanted_person' ? 'bg-red-600 text-white font-bold' : 'bg-red-50 text-red-700 hover:bg-red-100' }}">🚨 Recherchés</a>
+            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['type' => 'child_missing'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('type') === 'child_missing' ? 'bg-blue-600 text-white font-bold' : 'bg-blue-50 text-blue-700 hover:bg-blue-100' }}">{{ __('Enfants') }}</a>
+            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['type' => 'adult_missing'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('type') === 'adult_missing' ? 'bg-purple-600 text-white font-bold' : 'bg-purple-50 text-purple-700 hover:bg-purple-100' }}">{{ __('Adultes') }}</a>
+            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['type' => 'wanted_person'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('type') === 'wanted_person' ? 'bg-red-600 text-white font-bold' : 'bg-red-50 text-red-700 hover:bg-red-100' }}">{{ __('Recherchés') }}</a>
         </div>
         <div class="flex items-center gap-2">
             <span class="text-sm font-medium text-gray-700">{{ __('Statut:') }}</span>
-            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['filter_status' => 'pending'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('filter_status') === 'pending' ? 'bg-amber-500 text-white font-bold' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' }}">⏳ En attente</a>
-            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['filter_status' => 'verified'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('filter_status') === 'verified' ? 'bg-emerald-600 text-white font-bold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">✅ Validés</a>
+            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['filter_status' => 'pending'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('filter_status') === 'pending' ? 'bg-amber-500 text-white font-bold' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' }}">{{ __('En attente') }}</a>
+            <a href="{{ route('admin.dashboard', array_merge(request()->query(), ['filter_status' => 'verified'])) }}" class="px-3 py-1 text-xs rounded-full {{ request('filter_status') === 'verified' ? 'bg-emerald-600 text-white font-bold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">{{ __('Validés') }}</a>
         </div>
     </div>
 
@@ -91,7 +91,7 @@
                             @if(!$child->is_verified)
                                 <form action="{{ route('admin.children.verify', $child) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition" title="Valider l'alerte et diffuser la notification aux citoyens">
+                                    <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition" title="{{ __('Valider l\'alerte et diffuser la notification aux citoyens') }}">
                                         📢 {{ __('Valider & Diffuser') }}
                                     </button>
                                 </form>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Rapport des Enfants Disparus</title>
+    <title>{{ __('Rapport des Enfants Disparus') }}</title>
     <style>
         body { font-family: sans-serif; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -15,19 +15,19 @@
 <body>
     <div class="header">
         <h1>🛡️ SAFE CHILD</h1>
-        <h2>Rapport Officiel des Personnes et Enfants Recherchés</h2>
-        <p>Généré le : {{ now()->format('d/m/Y H:i') }}</p>
+        <h2>{{ __('Rapport Officiel des Personnes et Enfants Recherchés') }}</h2>
+        <p>{{ __('Généré le :') }} {{ now()->format('d/m/Y H:i') }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Type</th>
-                <th>Nom</th>
-                <th>Âge</th>
-                <th>Dernier lieu connu</th>
-                <th>Date</th>
-                <th>Statut</th>
+                <th>{{ __('Type') }}</th>
+                <th>{{ __('Nom') }}</th>
+                <th>{{ __('Âge') }}</th>
+                <th>{{ __('Dernier lieu connu') }}</th>
+                <th>{{ __('Date') }}</th>
+                <th>{{ __('Statut') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -35,18 +35,18 @@
             <tr>
                 <td>
                     @if($child->alert_type === 'wanted_person')
-                        Recherché
+                        {{ __('Recherché') }}
                     @elseif($child->alert_type === 'adult_missing')
-                        Adulte disparu
+                        {{ __('Adulte disparu') }}
                     @else
-                        Enfant disparu
+                        {{ __('Enfant disparu') }}
                     @endif
                 </td>
                 <td><strong>{{ $child->name }}</strong></td>
-                <td>{{ $child->age }} ans</td>
+                <td>{{ $child->age }} {{ __('ans') }}</td>
                 <td>{{ round($child->disappearance_lat, 4) }}, {{ round($child->disappearance_lng, 4) }}</td>
                 <td>{{ $child->disappeared_at ? $child->disappeared_at->format('d/m/Y H:i') : '-' }}</td>
-                <td class="status">{{ $child->is_verified ? 'Diffusé' : 'En attente' }}</td>
+                <td class="status">{{ $child->is_verified ? __('Diffusée') : __('En attente') }}</td>
             </tr>
             @endforeach
         </tbody>

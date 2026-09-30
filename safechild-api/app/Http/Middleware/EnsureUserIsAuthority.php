@@ -22,11 +22,11 @@ class EnsureUserIsAuthority
 
         if (! $user || ! $user->can('accessAdminPanel')) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Non autorisé.'], 403);
+                return response()->json(['message' => 'Unauthorized.'], 403);
             }
 
             return redirect()->route('admin.login')
-                ->withErrors(['email' => 'Accès refusé. Seules les autorités peuvent accéder à cette interface.']);
+                ->withErrors(['email' => 'Access denied. Only authorities can access this interface.']);
         }
 
         return $next($request);

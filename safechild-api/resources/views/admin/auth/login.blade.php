@@ -15,7 +15,7 @@
                 <span class="font-bold text-xs">EN</span>
             </a>
         @else
-            <a href="{{ route('lang.switch', 'fr') }}" class="flex items-center space-x-1.5 bg-blue-800 text-white hover:bg-blue-700 px-3 py-1.5 rounded-lg border border-blue-700 shadow-lg transition" title="Passer en Français">
+            <a href="{{ route('lang.switch', 'fr') }}" class="flex items-center space-x-1.5 bg-blue-800 text-white hover:bg-blue-700 px-3 py-1.5 rounded-lg border border-blue-700 shadow-lg transition" title="{{ __('Passer en Français') }}">
                 <span class="text-lg">🇫🇷</span>
                 <span class="font-bold text-xs">FR</span>
             </a>

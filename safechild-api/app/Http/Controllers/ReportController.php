@@ -72,6 +72,6 @@ class ReportController extends Controller
             return;
         }
 
-        abort(403, 'Non autorisé.');
+        abort(403, 'Unauthorized.');
     }
 }

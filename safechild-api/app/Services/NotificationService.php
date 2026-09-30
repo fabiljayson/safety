@@ -86,17 +86,17 @@ class NotificationService
 
         switch ($type) {
             case 'wanted_person':
-                $title = "⚠️ AVIS DE RECHERCHE : {$child->name}";
-                $body = 'Un avis de recherche a été émis par les autorités dans votre zone. Consultez l\'application pour plus d\'informations.';
+                $title = "⚠️ WANTED NOTICE: {$child->name}";
+                $body = 'Authorities have issued a wanted notice in your area. Open the app for more information.';
                 break;
             case 'adult_missing':
-                $title = "🚨 DISPARITION INQUIÉTANTE : {$child->name}";
-                $body = 'Une personne a disparu près de votre position. Consultez l\'application pour aider aux recherches.';
+                $title = "🚨 CONCERNING MISSING PERSON: {$child->name}";
+                $body = 'A person has gone missing near your location. Open the app to help with the search.';
                 break;
             case 'child_missing':
             default:
-                $title = "🚨 ALERTE ENLÈVEMENT : {$child->name}";
-                $body = 'Un enfant a disparu près de chez vous. Ouvrez l\'application pour consulter sa description.';
+                $title = "🚨 KIDNAPPING ALERT: {$child->name}";
+                $body = 'A child has gone missing near you. Open the app to read their description.';
                 break;
         }
 

@@ -100,7 +100,7 @@ class MissingChildController extends Controller
         $isAuthority = $this->isAuthority($request);
 
         if (! $isAuthority && $request->user()->id !== $missingChild->user_id) {
-            return response()->json(['message' => 'Non autorisé'], 403);
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $validated = $request->validate([
@@ -135,7 +135,7 @@ class MissingChildController extends Controller
     public function verify(Request $request, MissingChild $missingChild)
     {
         if (! $this->isAuthority($request)) {
-            return response()->json(['message' => 'Non autorisé. Seules les autorités peuvent vérifier une alerte.'], 403);
+            return response()->json(['message' => 'Unauthorized. Only authorities can verify an alert.'], 403);
         }
 
         // Only broadcast on the transition, so re-verifying an alert does not
@@ -148,7 +148,7 @@ class MissingChildController extends Controller
             $this->notificationService->broadcastAlert($missingChild);
         }
 
-        return response()->json(['message' => 'Alerte vérifiée et diffusée avec succès', 'child' => $missingChild]);
+        return response()->json(['message' => 'Alert verified and broadcast successfully', 'child' => $missingChild]);
     }
 
     private function isAuthority(Request $request): bool
@@ -171,6 +171,6 @@ class MissingChildController extends Controller
             return;
         }
 
-        abort(403, 'Non autorisé.');
+        abort(403, 'Unauthorized.');
     }
 }

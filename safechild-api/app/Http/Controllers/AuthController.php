@@ -80,7 +80,7 @@ class AuthController extends Controller
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Les identifiants fournis sont incorrects.'],
+                'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
@@ -97,7 +97,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Déconnecté avec succès']);
+        return response()->json(['message' => 'Signed out successfully']);
     }
 
     public function me(Request $request)
@@ -118,7 +118,7 @@ class AuthController extends Controller
             'last_lng' => $request->lng,
         ]);
 
-        return response()->json(['message' => 'Localisation mise à jour']);
+        return response()->json(['message' => 'Location updated']);
     }
 
     public function updateFcmToken(Request $request)
@@ -131,6 +131,6 @@ class AuthController extends Controller
             'fcm_token' => $request->fcm_token,
         ]);
 
-        return response()->json(['message' => 'FCM token mis à jour']);
+        return response()->json(['message' => 'FCM token updated']);
     }
 }
