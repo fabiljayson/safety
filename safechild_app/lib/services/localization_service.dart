@@ -73,13 +73,15 @@ class AppTranslations {
       'hello': 'Bonjour',
       'welcome_back': 'Ensemble pour la recherche et la sécurité',
       'community_title': 'Communauté Safety',
-      'community_info': 'Partagez des témoignages ou des conseils pour aider la communauté.',
+      'community_info':
+          'Partagez des témoignages ou des conseils pour aider la communauté.',
       'time_ago': 'Il y a 30 minutes',
       'comments': 'commentaires',
       'share': 'Partager',
       'later': 'Plus tard',
       'alert_launched': 'Alerte Lancée !',
-      'ia_analysis_ready': 'L\'IA a analysé la photo et votre signalement est prêt. Voulez-vous partager cette alerte ?',
+      'ia_analysis_ready':
+          'L\'IA a analysé la photo et votre signalement est prêt. Voulez-vous partager cette alerte ?',
       'critical_alert_btn': 'LANCER L\'ALERTE CRITIQUE',
       'add_child_photo': 'Ajouter une photo de l\'enfant',
       'basic_info': 'Informations de base',
@@ -95,11 +97,13 @@ class AppTranslations {
       'map_mode': 'Mode Carte',
       'no_reports': 'Vous n\'avez lancé aucune alerte.',
       'logout_confirm_title': 'Déconnexion',
-      'logout_confirm_content': 'Voulez-vous vraiment vous déconnecter de votre session ?',
+      'logout_confirm_content':
+          'Voulez-vous vraiment vous déconnecter de votre session ?',
       'cancel': 'ANNULER',
       'notifications': 'Notifications',
       'alert_kidnapping': 'Alerte Enlèvement',
-      'notif_body': 'Un signalement a été fait dans votre zone. Soyez vigilants.',
+      'notif_body':
+          'Un signalement a été fait dans votre zone. Soyez vigilants.',
       'new_post': 'Nouveau message',
       'post_hint': 'Partagez votre message avec la communauté...',
       'publish': 'PUBLIER',
@@ -110,8 +114,10 @@ class AppTranslations {
       // Added Keys
       'forgot_password_title': 'Mot de passe oublié ?',
       'code_sent': 'Code envoyé ! Vérifiez vos emails.',
-      'reset_instructions': 'Entrez le code à 6 chiffres reçu par email et votre nouveau mot de passe.',
-      'forgot_instructions': 'Entrez votre adresse email pour recevoir un code de réinitialisation.',
+      'reset_instructions':
+          'Entrez le code à 6 chiffres reçu par email et votre nouveau mot de passe.',
+      'forgot_instructions':
+          'Entrez votre adresse email pour recevoir un code de réinitialisation.',
       'code_label': 'Code à 6 chiffres',
       'new_password_label': 'Nouveau mot de passe',
       'confirm_password_label': 'Confirmer le mot de passe',
@@ -120,7 +126,13 @@ class AppTranslations {
       'password_reset_success': 'Mot de passe réinitialisé !',
       'fill_fields': 'Veuillez remplir tous les champs',
       'enter_name': 'Veuillez entrer votre nom',
-      'gps_required_alert': 'Veuillez remplir tous les champs et autoriser le GPS.',
+      'gps_required_alert':
+          'Veuillez remplir tous les champs et autoriser le GPS.',
+      'location_permission_denied':
+          'Localisation indisponible. Autorisez la geolocalisation pour envoyer une alerte.',
+      'retry': 'Reessayer',
+      'location_service_off':
+          'Activez la localisation de votre appareil pour envoyer une alerte.',
       'later_btn': 'Plus tard',
       'share_btn': 'PARTAGER',
       'processing_alert': 'Traitement de l\'alerte...',
@@ -128,13 +140,16 @@ class AppTranslations {
       'particulars_desc_title': 'Signes particuliers & Description',
       'report_sighting_title': 'Signaler un aperçu',
       'sightings_reported_title': 'Aperçus signalés',
-      'no_sightings_msg': 'Aucun aperçu n\'a encore été signalé pour cet enfant.',
+      'no_sightings_msg':
+          'Aucun aperçu n\'a encore été signalé pour cet enfant.',
       'add_sighting_photo_hint': 'Ajouter une photo de l\'aperçu (Optionnel)',
       'gps_not_acquired': 'GPS non acquis',
       'activate_gps_btn': 'Activer GPS',
-      'sighting_hint': 'Où et comment avez-vous aperçu l\'enfant ? Détails sur sa tenue, les personnes à ses côtés...',
+      'sighting_hint':
+          'Où et comment avez-vous aperçu l\'enfant ? Détails sur sa tenue, les personnes à ses côtés...',
       'send_sighting_btn': 'ENVOYER LE SIGNALEMENT',
-      'gps_sighting_required': 'La localisation GPS est requise pour signaler un aperçu.',
+      'gps_sighting_required':
+          'La localisation GPS est requise pour signaler un aperçu.',
       'sighting_success_msg': 'Signalement d\'aperçu envoyé avec succès !',
       'sighting_by': 'Par :',
       'sighting_at': 'à',
@@ -147,10 +162,12 @@ class AppTranslations {
       'pending_approval': 'En attente de validation',
       'published_alert': 'Validée & Diffusée',
       'authority_notice_title': 'Validation obligatoire par les autorités',
-      'authority_notice_desc': 'Votre signalement sera vérifié et validé par les autorités avant diffusion publique et notifications d\'urgence.',
+      'authority_notice_desc':
+          'Votre signalement sera vérifié et validé par les autorités avant diffusion publique et notifications d\'urgence.',
       'submit_for_review_btn': 'SOUMETTRE POUR VALIDATION',
       'alert_submitted_title': 'Signalement Enregistré !',
-      'alert_submitted_desc': 'Votre alerte a été transmise aux autorités. Une notification géolocalisée sera automatiquement diffusée dès sa validation officielle.',
+      'alert_submitted_desc':
+          'Votre alerte a été transmise aux autorités. Une notification géolocalisée sera automatiquement diffusée dès sa validation officielle.',
       'filter_all': 'Tous',
       'filter_children': 'Enfants',
       'filter_adults': 'Adultes',
@@ -208,7 +225,8 @@ class AppTranslations {
       'share': 'Share',
       'later': 'Later',
       'alert_launched': 'Alert Launched!',
-      'ia_analysis_ready': 'AI analyzed the photo and your report is ready. Do you want to share this alert?',
+      'ia_analysis_ready':
+          'AI analyzed the photo and your report is ready. Do you want to share this alert?',
       'critical_alert_btn': 'LAUNCH CRITICAL ALERT',
       'add_child_photo': 'Add child photo',
       'basic_info': 'Basic Information',
@@ -239,8 +257,10 @@ class AppTranslations {
       // Added Keys
       'forgot_password_title': 'Forgot Password?',
       'code_sent': 'Code sent! Check your emails.',
-      'reset_instructions': 'Enter the 6-digit code received by email and your new password.',
-      'forgot_instructions': 'Enter your email address to receive a reset code.',
+      'reset_instructions':
+          'Enter the 6-digit code received by email and your new password.',
+      'forgot_instructions':
+          'Enter your email address to receive a reset code.',
       'code_label': '6-digit code',
       'new_password_label': 'New password',
       'confirm_password_label': 'Confirm password',
@@ -250,6 +270,11 @@ class AppTranslations {
       'fill_fields': 'Please fill in all fields',
       'enter_name': 'Please enter your name',
       'gps_required_alert': 'Please fill in all fields and allow GPS.',
+      'location_permission_denied':
+          'Location unavailable. Allow location access to send an alert.',
+      'retry': 'Retry',
+      'location_service_off':
+          'Turn on your device location services to send an alert.',
       'later_btn': 'Later',
       'share_btn': 'SHARE',
       'processing_alert': 'Processing alert...',
@@ -261,7 +286,8 @@ class AppTranslations {
       'add_sighting_photo_hint': 'Add a photo of the sighting (Optional)',
       'gps_not_acquired': 'GPS not acquired',
       'activate_gps_btn': 'Activate GPS',
-      'sighting_hint': 'Where and how did you spot the child? Details on clothing, people accompanying them...',
+      'sighting_hint':
+          'Where and how did you spot the child? Details on clothing, people accompanying them...',
       'send_sighting_btn': 'SEND REPORT',
       'gps_sighting_required': 'GPS location is required to report a sighting.',
       'sighting_success_msg': 'Sighting report sent successfully!',
@@ -276,10 +302,12 @@ class AppTranslations {
       'pending_approval': 'Pending Validation',
       'published_alert': 'Validated & Broadcasted',
       'authority_notice_title': 'Mandatory Authority Validation',
-      'authority_notice_desc': 'Your report will be reviewed and validated by authorities before public broadcast and emergency notifications.',
+      'authority_notice_desc':
+          'Your report will be reviewed and validated by authorities before public broadcast and emergency notifications.',
       'submit_for_review_btn': 'SUBMIT FOR REVIEW',
       'alert_submitted_title': 'Report Registered!',
-      'alert_submitted_desc': 'Your alert has been forwarded to the authorities. A geolocated alert will automatically be broadcast upon official approval.',
+      'alert_submitted_desc':
+          'Your alert has been forwarded to the authorities. A geolocated alert will automatically be broadcast upon official approval.',
       'filter_all': 'All',
       'filter_children': 'Children',
       'filter_adults': 'Adults',

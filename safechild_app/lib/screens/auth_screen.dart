@@ -1,20 +1,41 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
 import '../services/api_service.dart';
 import '../services/localization_service.dart';
 import '../models/user.dart';
-import 'main_navigation_screen.dart';
 import 'forgot_password_screen.dart';
 
-final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
-  return AuthNotifier(ref.watch(apiServiceProvider));
+final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((
+  ref,
+) {
+  return AuthNotifier(
+    ref.watch(apiServiceProvider),
+    sessionExpiredController.stream,
+  );
 });
 
 class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
-  final ApiService _apiService;
-  AuthNotifier(this._apiService) : super(const AsyncValue.data(null)) {
+  AuthNotifier(this._apiService, Stream<void> sessionExpired)
+    : super(const AsyncValue.data(null)) {
     checkAuth();
+
+    // The API layer clears the stored token and pushes here when the server
+    // rejects it. Dropping to a null user makes SafetyApp swap the home route
+    // back to the login screen.
+    _sessionExpiredSubscription = sessionExpired.listen((_) {
+      state = const AsyncValue.data(null);
+    });
+  }
+
+  final ApiService _apiService;
+  late final StreamSubscription<void> _sessionExpiredSubscription;
+
+  @override
+  void dispose() {
+    _sessionExpiredSubscription.cancel();
+    super.dispose();
   }
 
   Future<void> checkAuth() async {
@@ -32,10 +53,10 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<void> login(String email, String password) async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiService.post('/login', data: {
-        'email': email,
-        'password': password,
-      });
+      final response = await _apiService.post(
+        '/login',
+        data: {'email': email, 'password': password},
+      );
       final user = User.fromJson(response.data['user']);
       await _apiService.saveToken(response.data['access_token']);
       state = AsyncValue.data(user);
@@ -47,12 +68,15 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<void> register(String name, String email, String password) async {
     state = const AsyncValue.loading();
     try {
-      final response = await _apiService.post('/register', data: {
-        'name': name,
-        'email': email,
-        'password': password,
-        'role': 'parent',
-      });
+      final response = await _apiService.post(
+        '/register',
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          'role': 'parent',
+        },
+      );
       final user = User.fromJson(response.data['user']);
       await _apiService.saveToken(response.data['access_token']);
       state = AsyncValue.data(user);
@@ -88,36 +112,30 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _obscurePassword = true;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final tr = AppTranslations.of(context);
 
+    // Navigation is owned by SafetyApp, which already swaps its `home` route
+    // based on this provider. Pushing a route from here as well used to stack
+    // a second MainNavigationScreen on top, so pressing back returned to a
+    // duplicate of the app shell with its own provider state.
     ref.listen(authProvider, (previous, next) {
       next.whenOrNull(
-        data: (user) {
-          if (user != null) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
-            );
-          }
-        },
         error: (e, _) {
-          String errorMessage = e.toString();
-          if (e is DioException) {
-            if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
-              errorMessage = tr.translate('connection_error_api');
-            } else if (e.response?.data != null && e.response?.data['message'] != null) {
-              errorMessage = e.response?.data['message'];
-              if (e.response?.data['errors'] != null) {
-                final errors = e.response?.data['errors'] as Map<String, dynamic>;
-                errorMessage = errors.values.first[0];
-              }
-            }
-          }
-          
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${tr.translate('error')}: $errorMessage'),
+              content: Text(
+                '${tr.translate('error')}: ${describeApiError(e, connectionMessage: tr.translate('connection_error_api'))}',
+              ),
               backgroundColor: Colors.redAccent,
             ),
           );
@@ -193,22 +211,36 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     Container(
                       padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor.withValues(alpha: 0.9),
+                        color: Theme.of(
+                          context,
+                        ).cardColor.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 15, spreadRadius: 5)],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 15,
+                            spreadRadius: 5,
+                          ),
+                        ],
                       ),
                       child: Column(
                         children: [
                           Text(
-                            _isLogin ? tr.translate('login') : tr.translate('register'),
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue[900]),
+                            _isLogin
+                                ? tr.translate('login')
+                                : tr.translate('register'),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[900],
+                            ),
                           ),
                           const SizedBox(height: 20),
                           if (!_isLogin)
                             _buildTextField(
-                              controller: _nameController, 
-                              label: tr.translate('name'), 
-                              icon: Icons.person_outline
+                              controller: _nameController,
+                              label: tr.translate('name'),
+                              icon: Icons.person_outline,
                             ),
                           _buildTextField(
                             controller: _emailController,
@@ -217,20 +249,24 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             keyboardType: TextInputType.emailAddress,
                           ),
                           _buildTextField(
-                            controller: _passwordController, 
-                            label: tr.translate('password'), 
-                            icon: Icons.lock_outline, 
+                            controller: _passwordController,
+                            label: tr.translate('password'),
+                            icon: Icons.lock_outline,
                             obscureText: _obscurePassword,
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: Colors.blue[900],
                                 size: 20,
                               ),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              onPressed: () => setState(
+                                () => _obscurePassword = !_obscurePassword,
+                              ),
                             ),
                           ),
-                          
+
                           if (_isLogin)
                             Align(
                               alignment: Alignment.centerRight,
@@ -238,10 +274,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const ForgotPasswordScreen(),
+                                    ),
                                   );
                                 },
-                                child: Text(tr.translate('forgot_password_title'), style: const TextStyle(fontSize: 12)),
+                                child: Text(
+                                  tr.translate('forgot_password_title'),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
                               ),
                             ),
 
@@ -256,18 +298,33 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.blue[900],
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 15),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 15,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                   elevation: 5,
                                 ),
-                                child: Text(_isLogin ? tr.translate('login') : tr.translate('register'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                child: Text(
+                                  _isLogin
+                                      ? tr.translate('login')
+                                      : tr.translate('register'),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
                           const SizedBox(height: 15),
                           TextButton(
-                            onPressed: () => setState(() => _isLogin = !_isLogin),
+                            onPressed: () =>
+                                setState(() => _isLogin = !_isLogin),
                             child: Text(
-                              _isLogin ? tr.translate('no_account') : tr.translate('have_account'),
+                              _isLogin
+                                  ? tr.translate('no_account')
+                                  : tr.translate('have_account'),
                               style: TextStyle(color: Colors.blue[900]),
                             ),
                           ),
@@ -285,16 +342,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Widget _buildTextField({
-    required TextEditingController controller, 
-    required String label, 
-    required IconData icon, 
-    bool obscureText = false, 
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
     TextInputType? keyboardType,
     Widget? suffixIcon,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
-      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
@@ -306,7 +366,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           prefixIcon: Icon(icon, size: 20, color: Colors.blue[900]),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 15,
+          ),
         ),
       ),
     );
@@ -318,21 +381,20 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr.translate('fill_fields'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(tr.translate('fill_fields'))));
       return;
     }
 
     if (_isLogin) {
-      debugPrint('Attempting login with: $email');
       ref.read(authProvider.notifier).login(email, password);
     } else {
       final name = _nameController.text.trim();
       if (name.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(tr.translate('enter_name'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(tr.translate('enter_name'))));
         return;
       }
       ref.read(authProvider.notifier).register(name, email, password);

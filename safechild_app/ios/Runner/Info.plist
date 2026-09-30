@@ -45,5 +45,16 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!--
+		iOS terminates an app that touches the camera, the photo library or
+		Core Location without a matching purpose string. All three are used:
+		geolocator places alerts and sightings, image_picker attaches photos.
+	-->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Safety utilise votre position pour signaler une disparition à l'endroit exact et pour vous alerter des personnes disparues autour de vous.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Safety utilise l'appareil photo pour prendre en photo la personne disparue et les témoins d'une observation.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Safety accède à vos photos pour joindre une photo de la personne disparue ou d'une observation à un signalement.</string>
 </dict>
 </plist>

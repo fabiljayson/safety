@@ -1,37 +1,19 @@
-import 'package:hive/hive.dart';
-
-part 'missing_child.g.dart';
-
-@HiveType(typeId: 0)
-class MissingChild extends HiveObject {
-  @HiveField(0)
+class MissingChild {
   final int? id;
-  @HiveField(1)
   final int userId;
-  @HiveField(2)
   final String name;
-  @HiveField(3)
   final int age;
-  @HiveField(4)
   final String? photoUrl;
-  @HiveField(5)
   final String? description;
-  @HiveField(6)
   final String? lastClothes;
-  @HiveField(7)
   final String status;
-  @HiveField(8)
   final double disappearanceLat;
-  @HiveField(9)
   final double disappearanceLng;
-  @HiveField(10)
   final DateTime disappearedAt;
-  @HiveField(11)
   final bool isVerified;
-  @HiveField(12)
   final String alertType;
 
-  MissingChild({
+  const MissingChild({
     this.id,
     required this.userId,
     required this.name,
@@ -53,19 +35,19 @@ class MissingChild extends HiveObject {
 
   factory MissingChild.fromJson(Map<String, dynamic> json) {
     return MissingChild(
-      id: json['id'],
-      userId: json['user_id'],
-      name: json['name'],
-      age: json['age'],
-      photoUrl: json['photo_url'],
-      description: json['description'],
-      lastClothes: json['last_clothes'],
-      status: json['status'] ?? 'missing',
-      disappearanceLat: double.parse(json['disappearance_lat'].toString()),
-      disappearanceLng: double.parse(json['disappearance_lng'].toString()),
-      disappearedAt: DateTime.parse(json['disappeared_at']),
+      id: json['id'] as int?,
+      userId: json['user_id'] as int,
+      name: json['name'] as String,
+      age: json['age'] as int,
+      photoUrl: json['photo_url'] as String?,
+      description: json['description'] as String?,
+      lastClothes: json['last_clothes'] as String?,
+      status: json['status'] as String? ?? 'missing',
+      disappearanceLat: (json['disappearance_lat'] as num).toDouble(),
+      disappearanceLng: (json['disappearance_lng'] as num).toDouble(),
+      disappearedAt: DateTime.parse(json['disappeared_at'] as String),
       isVerified: json['is_verified'] == 1 || json['is_verified'] == true,
-      alertType: json['alert_type'] ?? 'child_missing',
+      alertType: json['alert_type'] as String? ?? 'child_missing',
     );
   }
 
